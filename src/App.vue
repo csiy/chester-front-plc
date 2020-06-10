@@ -1,60 +1,76 @@
 <template>
-  <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-content>
-      <HelloWorld/>
-    </v-content>
-  </v-app>
+    <v-app>
+        <AppBar v-if="login"/>
+        <NavigationDrawer v-if="login"/>
+        <v-content v-if="!isLoading">
+            <v-fade-transition mode="out-in">
+                <router-view/>
+            </v-fade-transition>
+        </v-content>
+        <loading :active.sync="isLoading" :is-full-page="fullPage"/>
+    </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
 
-export default {
-  name: 'App',
+    import {
+        mapMutations,
+        mapState
+    } from 'vuex'
+    import Loading from 'vue-loading-overlay';
+    import 'vue-loading-overlay/dist/vue-loading.css';
+    import UserApi from './api/sys/UserApi'
+    import AuthApi from './api/sys/AuthApi'
+    import AppBar from "./components/app/AppBar";
+    import NavigationDrawer from "./components/app/NavigationDrawer";
 
-  components: {
-    HelloWorld,
-  },
-
-  data: () => ({
-    //
-  }),
-};
+    export default {
+        name: 'App',
+        components: {
+            NavigationDrawer,
+            AppBar,
+            Loading
+        },
+        created() {
+            // 网络断开
+            window.addEventListener('offline', () => {
+                this.$message.error('网络已经断开，请检查网络！');
+            })
+            // 网络重连
+            window.addEventListener('online', () => {
+                this.$message.success('网络已连接');
+            })
+            this.initAuth();
+        },
+        data: () => ({
+            isLoading: true,
+            fullPage: true,
+        }),
+        methods: {
+            ...mapMutations('user', ['initUser']),
+            ...mapMutations('app', ['setLogin']),
+            initAuth() {
+                AuthApi.loginByAuth().then(v => {
+                    UserApi.getUser().then(user => {
+                        this.isLoading = false;
+                        this.initUser(user.data);
+                        this.setLogin(true);
+                        if(this.$route.path==='/'){
+                            this.$router.push(`/index`).catch(err => err);
+                        }
+                    }).catch(v => {
+                        this.isLoading = false;
+                        this.$router.push({path: '/'}).catch(err => err);
+                    });
+                }).catch(v => {
+                    this.isLoading = false;
+                    this.$router.push({path: '/'}).catch(err => err);
+                });
+            },
+        },
+        computed: {
+            ...mapState('app', ['login']),
+            ...mapState('user', ['roleId']),
+        },
+    }
 </script>
