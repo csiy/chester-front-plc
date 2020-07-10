@@ -10,6 +10,9 @@ import vuetify from './plugins/vuetify';
 import moment from 'moment';
 import VuetifyDialog from 'vuetify-dialog'
 import 'vuetify-dialog/dist/vuetify-dialog.css'
+import { Upload } from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.component(Upload.name, Upload);
 
 Vue.use(VuetifyDialog, {
     context: {

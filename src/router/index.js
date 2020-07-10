@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Meta from 'vue-meta'
 import sys from "./sys";
+import plc from "./plc";
 
 Vue.use(Router)
 Vue.use(Meta)
@@ -19,6 +20,7 @@ const router = new Router({
             name: '首页',
         },
         ...sys,
+        ...plc,
         {
             path: '/info',
             component: () => import('../views/user/Info'),

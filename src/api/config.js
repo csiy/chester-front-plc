@@ -2,7 +2,7 @@ import axios from 'axios';
 import Vue from 'vue'
 
 const Axios = axios.create({
-    baseURL: 'http://39.99.199.83:8888',
+    baseURL: 'http://localhost:8888',
     timeout: 10000
 });
 
