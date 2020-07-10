@@ -4,7 +4,7 @@
             <span class="headline">导入物料</span>
         </v-card-title>
         <v-card-text>
-            <FileDrag v-if="data.length===0" @data="dataChange" link="C:\work\PLC\front\nginx\计划单导入模板.xlsx"/>
+            <FileDrag v-if="data.length===0" @data="dataChange" link="/download/物料导入模板.xlsx"/>
             <v-data-table v-else
                     :headers="headers"
                     :items="data"
