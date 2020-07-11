@@ -33,9 +33,17 @@
                 </v-row>
             </template>
             <template v-slot:item.createdOn="{ item }">
-                {{item.createdOn|formatTime('YYYY-MM-DD')}}
+                {{item.createdOn|formatTime('YYYYMMDD')}}{{item.batchNumber}}{{item.serialNumber}}{{item.lineNumber}}
             </template>
             <template v-slot:item.action="{ item }">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="printItem(item)">
+                            <v-icon>mdi-cloud-print-outline</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>打印</span>
+                </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="updateItem(item)">
@@ -72,6 +80,8 @@
     import DialogPlusMission from "../../dialogs/plc/DialogPlusMission";
     import DialogUpdateMission from "../../dialogs/plc/DialogUpdateMission";
     import DialogImportMission from "../../dialogs/plc/DialogImportMission";
+    import Label from "../../components/label/Label";
+    import MaterialApi from "../../api/plc/MaterialApi";
 
     export default {
         name: "Mission",
@@ -82,10 +92,7 @@
         data() {
             return {
                 headers: [
-                    {text: '日期', sortable: false, value: 'createdOn'},
-                    {text: '批次号', sortable: false, value: 'batchNumber'},
-                    {text: '流水号', sortable: false, value: 'serialNumber'},
-                    {text: '行项目号', sortable: false, value: 'lineNumber'},
+                    {text: '单号', sortable: false, value: 'createdOn'},
                     {text: '物料号', sortable: false, value: 'materialCode',},
                     {text: 'AO工序号', sortable: false, value: 'aoCode',},
                     {text: '包装数量', sortable: false, value: 'count',},
@@ -108,6 +115,24 @@
                 }
             }
         },
+        methods: {
+            printItem(item){
+                MaterialApi.getMaterial(item.materialCode,item.aoCode).then(v=>{
+                    this.$dialog.show(Label, {
+                        pageSize: {
+                            w:6,
+                            h:4
+                        },
+                        labelSize:{
+                            w:6,
+                            h:4
+                        },
+                        form: {...v.data},
+                        width:600,
+                    })
+                })
+            },
+        }
     }
 </script>
 

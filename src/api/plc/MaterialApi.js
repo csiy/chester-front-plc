@@ -12,9 +12,15 @@ let materialPlus = (material) => {
 let materialUpdate = (material) => {
     return Axios.put(`/plc/materials`,material);
 }
+
+let getMaterial = (materialCode,aoCode) => {
+    return Axios.get(`/plc/materials/${materialCode}/${aoCode}`);
+}
+
 export default {
     materialPages,
     materialDelete,
     materialPlus,
     materialUpdate,
+    getMaterial,
 }
