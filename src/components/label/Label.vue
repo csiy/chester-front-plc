@@ -41,10 +41,10 @@
     import QRCode from 'qrcodejs2'
     export default {
         name: "Label",
-        props:['form','labelSize','pageSize','command'],
+        props:['form','labelSize','pageSize','missionId'],
         mounted(){
             new QRCode(this.$refs.qrCodeDiv, {
-                text: JSON.stringify([this.form.aoCode,this.form.materialCode,this.form.quantity,this.form.position]),
+                text: JSON.stringify([this.missionId,this.form.aoCode,this.form.materialCode,this.form.quantity,this.form.position]),
                 width: 80,
                 height: 80,
                 colorDark: '#000000',

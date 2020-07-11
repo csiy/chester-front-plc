@@ -127,6 +127,7 @@
                             w:6,
                             h:4
                         },
+                        missionId: item.missionId,
                         form: {...v.data},
                         width:600,
                     })
