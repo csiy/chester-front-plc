@@ -32,9 +32,6 @@
                     </v-btn>
                 </v-row>
             </template>
-            <template v-slot:item.createdOn="{ item }">
-                {{item.createdOn|formatTime('YYYYMMDD')}}{{item.batchNumber}}{{item.serialNumber}}{{item.lineNumber}}
-            </template>
             <template v-slot:item.action="{ item }">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
@@ -92,7 +89,7 @@
         data() {
             return {
                 headers: [
-                    {text: '单号', sortable: false, value: 'createdOn'},
+                    {text: '单号', sortable: false, value: 'missionId'},
                     {text: '物料号', sortable: false, value: 'materialCode',},
                     {text: 'AO工序号', sortable: false, value: 'aoCode',},
                     {text: '包装数量', sortable: false, value: 'count',},
