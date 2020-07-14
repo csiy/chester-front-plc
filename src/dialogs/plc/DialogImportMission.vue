@@ -59,10 +59,7 @@
                     <v-edit-dialog large :return-value.sync="item.store">
                         {{ item.date }}
                         <template v-slot:input>
-                            <v-text-field
-                                    v-model.trim="item.date"
-                                    counter
-                            ></v-text-field>
+                            <v-date-picker v-model="item.date" scrollable></v-date-picker>
                         </template>
                     </v-edit-dialog>
                 </template>
@@ -70,10 +67,8 @@
                     <v-edit-dialog large :return-value.sync="item.time">
                         {{ item.time }}
                         <template v-slot:input>
-                            <v-text-field
-                                    v-model.trim="item.time"
-                                    counter
-                            ></v-text-field>
+                            <v-time-picker v-model="item.time" scrollable>
+                            </v-time-picker>
                         </template>
                     </v-edit-dialog>
                 </template>
@@ -90,6 +85,7 @@
 <script>
     import FileDrag from "../../components/base/FileDrag";
     import MissionApi from "../../api/plc/MissionApi";
+    import moment from 'moment'
     export default {
         name: "DialogImportMission",
         components: {FileDrag},
@@ -124,12 +120,34 @@
                             materialCode:v['*物料号'],
                             aoCode:v['*AO工序号'],
                             count:v['*包数'],
-                            date: v['需求日期'],
-                            time: v['需求时间'],
+                            date: this.getDate(v['需求日期']),
+                            time: this.getTime(v['需求时间']),
                             importStatus: ''
                         }
                     })
                 }
+            },
+            getDate(val){
+                if(val){
+                    let format="-"
+                    const time = new Date((val - 1) * 24 * 3600000 + 1)
+                    time.setYear(time.getFullYear() - 70)
+                    const year = time.getFullYear() + ''
+                    const month = time.getMonth() + 1 + ''
+                    const date = time.getDate() - 1 + ''
+                    if (format && format.length === 1) {
+                        return year + format + month + format + date
+                    }
+                    return year + (month < 10 ? '0' + month : month) + (date < 10 ? '0' + date : date)
+                }
+                return null
+            },
+            getTime(val){
+                if(val){
+                    const time = new Date((val - 1) * 24 * 3600000 + 1)
+                    return time.getUTCHours()+':'+time.getMinutes()
+                }
+                return null
             },
             async submit(){
                 if(!this.loading){
@@ -145,6 +163,9 @@
                             mission.importStatus = "请输入包数"
                         }else{
                             mission.lineNumber = i+1
+                            if(mission.date&&mission.time){
+                                mission.dateTime = mission.date+" "+mission.time
+                            }
                             await MissionApi.missionImport(mission,batchNumber).then(()=>{
                                 mission.importStatus = "导入成功"
                             }).catch((v)=>{

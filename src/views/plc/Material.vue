@@ -35,6 +35,9 @@
             <template v-slot:item.gears="{ item }">
                 {{gearsDictionary[item.gears]}}
             </template>
+            <template v-slot:item.updatedOn="{ item }">
+                {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
+            </template>
             <template v-slot:item.dish="{ item }">
                 {{dishDictionary[item.dish]}}
             </template>
@@ -85,17 +88,19 @@
         data() {
             return {
                 headers: [
-                    {text: '物料号', sortable: false, value: 'materialCode',},
-                    {text: '挡位', sortable: false, value: 'gears',},
-                    {text: '盘号', sortable: false, value: 'dish',},
-                    {text: '定额数量', sortable: false, value: 'quantity',},
-                    {text: 'AO工序号', sortable: false, value: 'aoCode',},
-                    {text: '生产站位', sortable: false, value: 'position'},
-                    {text: '代换新号', sortable: false, value: 'replace'},
-                    {text: '原定额代换', sortable: false, value: 'original'},
-                    {text: '存储区域', sortable: false, value: 'store'},
-                    {text: '存储BIN位', sortable: false, value: 'bin'},
-                    {text: '操作', sortable: false, value: 'action',},
+                    {text: '物料号', sortable: false, value: 'materialCode',width:150},
+                    {text: '挡位', sortable: false, value: 'gears',width:150},
+                    {text: '盘号', sortable: false, value: 'dish',width:150},
+                    {text: '定额数量', sortable: false, value: 'quantity',width:150},
+                    {text: 'AO工序号', sortable: false, value: 'aoCode',width:150},
+                    {text: '生产站位', sortable: false, value: 'position',width:150},
+                    {text: '代换新号', sortable: false, value: 'replace',width:150},
+                    {text: '原定额代换', sortable: false, value: 'original',width:150},
+                    {text: '存储区域', sortable: false, value: 'store',width:150},
+                    {text: '存储BIN位', sortable: false, value: 'bin',width:150},
+                    {text: '操作时间', sortable: false, value: 'updatedOn',width:150},
+                    {text: '操作人', sortable: false, value: 'updatedName',width:150},
+                    {text: '操作', sortable: false, value: 'action',width:150},
                 ],
                 query: {
                     materialCode: null,

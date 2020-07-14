@@ -42,15 +42,22 @@
         name: "DialogUpdateMachine",
         props:['item'],
         created() {
-            this.machine = {...this.item};
-            this.machine.machineDishList = [...this.item.machineDishList]
+            this.machine.machineId = this.item.machineId;
+            this.machine.address = this.item.address;
+            this.machine.version = this.item.version;
+            if(this.item.machineDishList.length>0){
+                this.machine.machineDishList = [...this.item.machineDishList]
+            }
         },
         data() {
             return {
                 valid: true,
                 machine: {
                     address: null,
-                    machineDishList: [],
+                    machineDishList: [{
+                        gears:null,
+                        dish:null
+                    }],
                     params: null,
                 },
                 dishList: [

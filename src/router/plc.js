@@ -13,5 +13,10 @@ export default [
         path: '/plc/materials',
         name: '物料维护',
         component: () => import('../views/plc/Material'),
+    },
+    {
+        path: '/plc/jobs',
+        name: '排程管理',
+        component: () => import('../views/plc/Job'),
     }
 ]

@@ -32,6 +32,12 @@
                     </v-btn>
                 </v-row>
             </template>
+            <template v-slot:item.updatedOn="{ item }">
+                {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
+            </template>
+            <template v-slot:item.transform="{ item }">
+                {{transformType[item.transform]}}
+            </template>
             <template v-slot:item.action="{ item }">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
@@ -93,13 +99,21 @@
                     {text: '物料号', sortable: false, value: 'materialCode',},
                     {text: 'AO工序号', sortable: false, value: 'aoCode',},
                     {text: '包装数量', sortable: false, value: 'count',},
-                    {text: '任务状态', sortable: false, value: 'status',},
-                    {text: '任务优先级', sortable: false, value: 'order',},
+                    {text: '需求日期', sortable: false, value: 'date',},
+                    {text: '需求时间', sortable: false, value: 'time',},
+                    {text: '状态', sortable: false, value: 'transform',},
+                    {text: '操作时间', sortable: false, value: 'updatedOn',},
+                    {text: '操作人', sortable: false, value: 'updatedName',},
                     {text: '操作', sortable: false, value: 'action',},
                 ],
                 query: {
                     materialCode: null,
                     aoCode: null,
+                },
+                transformType:{
+                    1:'未转换',
+                    2:'转换成功',
+                    3:'转换时找不到物料 '
                 },
                 dialog: {
                     plus: DialogPlusMission,
