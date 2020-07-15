@@ -19,7 +19,7 @@
                             <div class="text-center d-flex ml-4"><v-sheet>运行状态：</v-sheet><v-sheet width="100" dark class="teal lighten-1">{{machine.runState?'已经运行':'未运行'}}</v-sheet></div>
                         </div>
                         <div class="pa-2 d-flex">
-                            <v-btn icon v-if="machine.linkState">
+                            <v-btn icon v-if="machine.linkState&&machine.runtimeJob">
                                 <v-icon color="orange" @click="stopMachine" v-if="machine.runState">mdi-stop-circle-outline</v-icon>
                                 <v-icon color="primary" v-else @click="startMachine">mdi-play-circle-outline</v-icon>
                             </v-btn>
@@ -42,18 +42,18 @@
                 </v-card>
                 <v-data-table
                         :loading="loadingGetJobs"
-                        :headers="headers"
+                        :headers="headers1 "
                         :items="jobs"
                         :loading-text="loadingText"
                         class="elevation-1 px-4 pb-4 mt-4">
                     <template v-slot:top>
                         <div class="pa-8 display-2">已排程列表</div>
                     </template>
-                    <template v-slot:item.state="{ item }">
-                        {{getJobState(item)}}
+                    <template v-slot:item.gears="{ item }">
+                        {{gearsDictionary[item.gears]}}
                     </template>
-                    <template v-slot:item.updatedOn="{ item }">
-                        {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
+                    <template v-slot:item.dish="{ item }">
+                        {{dishDictionary[item.dish]}}
                     </template>
                     <template v-slot:item.action="{ item }">
                         <v-tooltip v-if="item.jobId!==jobs[0].jobId" bottom>
@@ -92,8 +92,14 @@
                     <template v-slot:item.state="{ item }">
                         {{getJobState(item)}}
                     </template>
+                    <template v-slot:item.gears="{ item }">
+                        {{gearsDictionary[item.gears]}}
+                    </template>
                     <template v-slot:item.updatedOn="{ item }">
                         {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
+                    </template>
+                    <template v-slot:item.dish="{ item }">
+                        {{dishDictionary[item.dish]}}
                     </template>
                     <template v-slot:item.action="{ item }">
                         <v-tooltip bottom>
@@ -135,24 +141,34 @@
         mixins:[TablePageMixins,DictionaryMixins],
         data() {
             return {
+                headers1: [
+                    {text: '操作', sortable: false, value: 'action',width:140},
+                    {text: '包装数量', sortable: false, value: 'mission.count',width:80},
+                    {text: '定额数量', sortable: false, value: 'material.quantity',width:80},
+                    {text: '挡位', sortable: false, value: 'gears',width:80},
+                    {text: '盘号', sortable: false, value: 'dish',width:80},
+                    {text: '指派员工', sortable: false, value: 'workName',width:120},
+                    {text: '生产站位', sortable: false, value: 'material.position',width:120},
+                    {text: '代换新号', sortable: false, value: 'material.replace',width:120},
+                    {text: '原定额代换', sortable: false, value: 'material.original',width:120},
+                    {text: '存储区域', sortable: false, value: 'material.store',width:120},
+                    {text: '存储BIN位', sortable: false, value: 'material.bin',width:120},
+                ],
                 headers: [
-                    {text: '包装数量', sortable: false, value: 'mission.count',width:150},
-                    {text: '需求日期', sortable: false, value: 'mission.date',width:150},
-                    {text: '需求时间', sortable: false, value: 'mission.time',width:150},
-                    {text: '物料号', sortable: false, value: 'material.materialCode',width:150},
-                    {text: '挡位', sortable: false, value: 'material.gears',width:150},
-                    {text: '盘号', sortable: false, value: 'material.dish',width:150},
-                    {text: '定额数量', sortable: false, value: 'material.quantity',width:150},
-                    {text: 'AO工序号', sortable: false, value: 'material.aoCode',width:150},
+                    {text: '操作', sortable: false, value: 'action',width:120},
+                    {text: '包装数量', sortable: false, value: 'mission.count',width:80},
+                    {text: '定额数量', sortable: false, value: 'material.quantity',width:80},
+                    {text: '挡位', sortable: false, value: 'gears',width:80},
+                    {text: '盘号', sortable: false, value: 'dish',width:80},
+                    {text: '指派员工', sortable: false, value: 'workName',width:150},
                     {text: '生产站位', sortable: false, value: 'material.position',width:150},
                     {text: '代换新号', sortable: false, value: 'material.replace',width:150},
                     {text: '原定额代换', sortable: false, value: 'material.original',width:150},
                     {text: '存储区域', sortable: false, value: 'material.store',width:150},
                     {text: '存储BIN位', sortable: false, value: 'material.bin',width:150},
+                    {text: '物料号', sortable: false, value: 'material.materialCode',width:150},
+                    {text: 'AO工序号', sortable: false, value: 'material.aoCode',width:150},
                     {text: '状态', sortable: false, value: 'state',width:200},
-                    {text: '操作时间', sortable: false, value: 'updatedOn',width:150},
-                    {text: '操作人', sortable: false, value: 'updatedName',width:100},
-                    {text: '操作', sortable: false, value: 'action',width:150},
                 ],
                 interval: null,
                 machine: {},
@@ -254,6 +270,25 @@
                     })
                 }
             },
+            search() {
+                if(this.actions.search){
+                    if (!this.loading) {
+                        this.loading = true;
+                        this.actions.search(this.query, this.page).then(v => {
+                            this.page = v.data.page;
+                            this.items = v.data.items.map(v=>{
+                               return {
+                                   ...v,
+                                   gears:v.material.gears,
+                                   dish:v.material.dish
+                               }
+                            })
+                        }).finally(() => {
+                            this.loading = false;
+                        })
+                    }
+                }
+            },
             getJob(){
                 if(!this.loadingGetJob&&this.machine.runtimeJob){
                     this.loadingGetJob = true;
@@ -272,7 +307,12 @@
                         this.loadingGetJobs = false;
                         let jobs = [];
                         for(let i in this.machine.jobs){
-                            jobs.push(v.data.filter(v=>v.jobId===this.machine.jobs[i])[0])
+                            let job = v.data.filter(v=>v.jobId===this.machine.jobs[i])[0];
+                            jobs.push({
+                                ...job,
+                                gears:job.material.gears,
+                                dish:job.material.dish
+                            })
                         }
                         this.jobs = jobs;
                     })
