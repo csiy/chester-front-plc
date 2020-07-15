@@ -98,14 +98,6 @@
                     <template v-slot:item.action="{ item }">
                         <v-tooltip bottom>
                             <template v-slot:activator="{ on }">
-                                <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="updateItem(item)">
-                                    <v-icon>mdi-cog-outline</v-icon>
-                                </v-btn>
-                            </template>
-                            <span>修改</span>
-                        </v-tooltip>
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on }">
                                 <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.machineId,item.version)">
                                     <v-icon>mdi-delete-forever-outline</v-icon>
                                 </v-btn>
