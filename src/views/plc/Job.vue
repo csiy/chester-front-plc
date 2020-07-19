@@ -1,127 +1,145 @@
 <template>
     <v-container fluid>
-        <v-row>
-            <v-col cols="6">
-                <v-card :loading="loadingMachines" class="pb-4">
-                    <v-slide-group v-model="machineNum" class="pa-4" mandatory show-arrows>
-                        <v-slide-item v-for="item in machines" :key="item.machineId" v-slot:default="{ active, toggle }">
-                            <v-card :color="active ? 'primary' : 'grey lighten-3'" :dark="active" class="ma-4 pa-2" height="100" width="150" @click="toggle">
-                                <div>设备:{{item.machineId}}</div>
-                                <div class="d-flex text-center align-center">状态:<v-sheet dark class="ml-2 lighten-1 px-1" :color="item.linkState?'orange':'teal'">{{item.linkState?'已链接':'未链接'}}</v-sheet></div>
-                                <div>当前盘号:{{item.runtimeDishNumber===-1?"未设置":item.runtimeDishNumber}}</div>
-                                <div>当前盘:{{!item.runtimeDish?"未设置":dishDictionary[item.runtimeDish.dish]+'盘'+gearsDictionary[item.runtimeDish.gears]+'挡'}}</div>
-                            </v-card>
-                        </v-slide-item>
-                    </v-slide-group>
-                    <v-card elevation="4" class="d-flex justify-space-between px-8 py-2 mx-10">
-                        <div class="pa-2 d-flex align-center">
-                            <div class="text-center d-flex"><v-sheet>当前设备：</v-sheet><v-sheet width="100" dark class="orange lighten-1">{{machine.machineId}}</v-sheet></div>
-                            <div class="text-center d-flex ml-4"><v-sheet>运行状态：</v-sheet><v-sheet width="100" dark class="teal lighten-1">{{machine.runState?'已经运行':'未运行'}}</v-sheet></div>
-                        </div>
-                        <div class="pa-2 d-flex">
-                            <v-btn icon v-if="machine.linkState&&machine.runtimeJob">
-                                <v-icon color="orange" @click="stopMachine" v-if="machine.runState">mdi-stop-circle-outline</v-icon>
-                                <v-icon color="primary" v-else @click="startMachine">mdi-play-circle-outline</v-icon>
-                            </v-btn>
-<!--                            <v-btn icon v-if="machine.linkState&&!machine.runState&&machine.jobs&&machine.jobs.length>0">-->
-<!--                                <v-icon color="light-green" @click="nextJob">mdi-skip-next-outline</v-icon>-->
-<!--                            </v-btn>-->
-                        </div>
+        <v-card :loading="loadingMachines" class="pb-4">
+            <v-slide-group v-model="machineNum" class="pa-4" mandatory show-arrows>
+                <v-slide-item v-for="item in machines" :key="item.machineId" v-slot:default="{ active, toggle }">
+                    <v-card :color="active ? 'primary' : 'grey lighten-3'" :dark="active" class="mr-4 pa-2" height="100" width="150" @click="toggle">
+                        <div>设备:{{item.machineId}}</div>
+                        <div class="d-flex text-center align-center">状态:<v-sheet dark class="ml-2 lighten-1 px-1" :color="item.linkState?'orange':'teal'">{{item.linkState?'已链接':'未链接'}}</v-sheet></div>
+                        <div>当前盘号:{{item.runtimeDishNumber===-1?"未设置":item.runtimeDishNumber}}</div>
+                        <div>当前盘:{{!item.runtimeDish?"未设置":dishDictionary[item.runtimeDish.dish]+'盘'+gearsDictionary[item.runtimeDish.gears]+'挡'}}</div>
                     </v-card>
-                    <v-card elevation="4" :loading="loadingGetJob" v-if="job" class="d-flex justify-start flex-wrap px-8 py-2 mx-10 my-4">
-                        <div style="width: 200px" class="text-truncate" :title="job.material.quantity">包装数量:{{job.mission.count}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.quantity">定额数量:{{job.material.quantity}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.materialCode">物料号:{{job.material.materialCode}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.aoCode">AO工序号:{{job.material.aoCode}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.gears">挡位:{{job.material.gears}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.dish">盘号:{{job.material.dish}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.position">生产站位:{{job.material.position}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.store">存储区域:{{job.material.store}}</div>
-                        <div style="width: 200px" class="text-truncate" :title="job.material.bin">存储BIN位:{{job.material.bin}}</div>
-                    </v-card>
-                </v-card>
-                <v-data-table
-                        :loading="loadingGetJobs"
-                        :headers="headers1 "
-                        :items="jobs"
-                        :loading-text="loadingText"
-                        class="elevation-1 px-4 pb-4 mt-4">
-                    <template v-slot:top>
-                        <div class="pa-8 display-2">已排程列表</div>
+                </v-slide-item>
+            </v-slide-group>
+            <v-divider/>
+            <v-card elevation="0" class="d-flex justify-space-between pa-4">
+                <div class="d-flex align-center">
+                    <div class="text-center d-flex align-center">
+                        <v-sheet>当前设备：</v-sheet>
+                        <v-sheet width="100" dark class="orange lighten-1 pa-1">{{machine.machineId}}</v-sheet>
+                        <v-sheet class="ml-4">运行状态：</v-sheet>
+                        <v-sheet width="100" dark class="teal lighten-1 pa-1">{{machine.runState?'已经运行':'未运行'}}</v-sheet>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <v-btn icon v-if="machine.linkState&&machine.runtimeJob">
+                        <v-icon color="orange" @click="stopMachine" v-if="machine.runState">mdi-stop-circle-outline</v-icon>
+                        <v-icon color="primary" v-else @click="startMachine">mdi-play-circle-outline</v-icon>
+                    </v-btn>
+                    <!--                            <v-btn icon v-if="machine.linkState&&!machine.runState&&machine.jobs&&machine.jobs.length>0">-->
+                    <!--                                <v-icon color="light-green" @click="nextJob">mdi-skip-next-outline</v-icon>-->
+                    <!--                            </v-btn>-->
+                </div>
+            </v-card>
+            <v-divider/>
+            <v-card elevation="0" :loading="loadingGetJob" v-if="job" class="d-flex justify-start flex-wrap pa-4">
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包装数量:{{job.mission.count}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">定额数量:{{job.material.quantity}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.materialCode">物料号:{{job.material.materialCode}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.aoCode">AO工序号:{{job.material.aoCode}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.gears">挡位:{{gearsDictionary[job.material.gears]}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.dish">盘号:{{dishDictionary[job.material.dish]}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.position">生产站位:{{job.material.position}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.store">存储区域:{{job.material.store}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.bin">存储BIN位:{{job.material.bin}}</div>
+            </v-card>
+        </v-card>
+        <v-data-table
+                :loading="loadingGetJobs"
+                :headers="headers1 "
+                :items="jobs"
+                :loading-text="loadingText"
+                class="elevation-1 px-4 pb-4 my-4">
+            <template v-slot:top>
+                <v-row align="center" justify="start">
+                    <v-col cols="2">
+                        <div class="display-2">已排程列表</div>
+                    </v-col>
+                    <v-spacer/>
+                    <v-btn @click="downloadMachineJobs">
+                        <v-icon left>mdi-download</v-icon>
+                        导出
+                    </v-btn>
+                </v-row>
+            </template>
+            <template v-slot:item.gears="{ item }">
+                {{gearsDictionary[item.material.gears]}}
+            </template>
+            <template v-slot:item.dish="{ item }">
+                {{dishDictionary[item.material.dish]}}
+            </template>
+            <template v-slot:item.action="{ item }">
+                <v-tooltip v-if="item.jobId!==jobs[0].jobId" bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="upSort(item)">
+                            <v-icon>mdi-upload</v-icon>
+                        </v-btn>
                     </template>
-                    <template v-slot:item.gears="{ item }">
-                        {{gearsDictionary[item.gears]}}
+                    <span>上移</span>
+                </v-tooltip>
+                <v-tooltip v-if="item.jobId!==jobs[jobs.length-1].jobId" bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="downSort(item)">
+                            <v-icon>mdi-download</v-icon>
+                        </v-btn>
                     </template>
-                    <template v-slot:item.dish="{ item }">
-                        {{dishDictionary[item.dish]}}
+                    <span>下移</span>
+                </v-tooltip>
+            </template>
+            <template v-slot:no-data>
+                未查询到数据
+            </template>
+        </v-data-table>
+        <v-data-table
+                :loading="loading"
+                :headers="headers"
+                :items="items"
+                hide-default-footer
+                :loading-text="loadingText"
+                class="elevation-1 px-4 pb-4">
+            <template v-slot:top>
+                <v-row align="center" justify="start">
+                    <v-col cols="2">
+                        <div class="display-2">未排程列表</div>
+                    </v-col>
+                    <v-spacer/>
+                    <v-btn @click="downloadAllJobs" :loading="isDownloadAllJobs">
+                        <v-icon left>mdi-download</v-icon>
+                        导出
+                    </v-btn>
+                </v-row>
+            </template>
+            <template v-slot:item.state="{ item }">
+                {{getJobState(item)}}
+            </template>
+            <template v-slot:item.gears="{ item }">
+                {{gearsDictionary[item.material.gears]}}
+            </template>
+            <template v-slot:item.updatedOn="{ item }">
+                {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
+            </template>
+            <template v-slot:item.dish="{ item }">
+                {{dishDictionary[item.material.dish]}}
+            </template>
+            <template v-slot:item.action="{ item }">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.machineId,item.version)">
+                            <v-icon>mdi-delete-forever-outline</v-icon>
+                        </v-btn>
                     </template>
-                    <template v-slot:item.action="{ item }">
-                        <v-tooltip v-if="item.jobId!==jobs[0].jobId" bottom>
-                            <template v-slot:activator="{ on }">
-                                <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="upSort(item)">
-                                    <v-icon>mdi-upload</v-icon>
-                                </v-btn>
-                            </template>
-                            <span>上移</span>
-                        </v-tooltip>
-                        <v-tooltip v-if="item.jobId!==jobs[jobs.length-1].jobId" bottom>
-                            <template v-slot:activator="{ on }">
-                                <v-btn v-on="on" icon color="blue-grey lighten-1" @click="downSort(item)">
-                                    <v-icon>mdi-download</v-icon>
-                                </v-btn>
-                            </template>
-                            <span>下移</span>
-                        </v-tooltip>
-                    </template>
-                    <template v-slot:no-data>
-                        未查询到数据
-                    </template>
-                </v-data-table>
-            </v-col>
-            <v-col cols="6">
-                <v-data-table
-                        :loading="loading"
-                        :headers="headers"
-                        :items="items"
-                        hide-default-footer
-                        :loading-text="loadingText"
-                        class="elevation-1 px-4 pb-4">
-                    <template v-slot:top>
-                        <div class="pa-8 display-2">未排程列表</div>
-                    </template>
-                    <template v-slot:item.state="{ item }">
-                        {{getJobState(item)}}
-                    </template>
-                    <template v-slot:item.gears="{ item }">
-                        {{gearsDictionary[item.gears]}}
-                    </template>
-                    <template v-slot:item.updatedOn="{ item }">
-                        {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
-                    </template>
-                    <template v-slot:item.dish="{ item }">
-                        {{dishDictionary[item.dish]}}
-                    </template>
-                    <template v-slot:item.action="{ item }">
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on }">
-                                <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.machineId,item.version)">
-                                    <v-icon>mdi-delete-forever-outline</v-icon>
-                                </v-btn>
-                            </template>
-                            <span>删除</span>
-                        </v-tooltip>
-                    </template>
-                    <template v-slot:no-data>
-                        未查询到数据
-                    </template>
-                    <template v-slot:footer v-if="pageCount">
-                        <v-divider/>
-                        <v-pagination class="mt-2" v-model="page.curPage" @input="search" :length="pageCount"
-                                      :total-visible="totalVisible"/>
-                    </template>
-                </v-data-table>
-            </v-col>
-        </v-row>
+                    <span>删除</span>
+                </v-tooltip>
+            </template>
+            <template v-slot:no-data>
+                未查询到数据
+            </template>
+            <template v-slot:footer v-if="pageCount">
+                <v-divider/>
+                <v-pagination class="mt-2" v-model="page.curPage" @input="search" :length="pageCount"
+                              :total-visible="totalVisible"/>
+            </template>
+        </v-data-table>
     </v-container>
 </template>
 
@@ -130,6 +148,7 @@
     import DictionaryMixins from "../../mixins/DictionaryMixins";
     import JobApi from "../../api/plc/JobApi";
     import MachineApi from "../../api/plc/MachineApi";
+    import export_json_to_excel  from '../../lib/Export2Excel'
 
     export default {
         name: "Job",
@@ -186,6 +205,7 @@
                 loadingGetJob:false,
                 loadingGetJobs:false,
                 loadingMachines:false,
+                isDownloadAllJobs:false
             }
         },
         watch:{
@@ -204,6 +224,60 @@
             }
         },
         methods:{
+            formatJson(filterVal,jsonData){
+                return jsonData.map(v => filterVal.map(j=> v[j]))
+            },
+            downloadMachineJobs(){
+                const tHeader = ['包装数量','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位']
+                const filterVal = ['count','quantity','gears','dish','workName','position','replace','original','store','bin']
+                const list = this.jobs.map(v=>{
+                    return {
+                        'count':v.mission.count,
+                        'quantity':v.material.quantity,
+                        'gears':this.gearsDictionary[v.material.gears],
+                        'dish':this.dishDictionary[v.material.dish],
+                        'workName':v.workName,
+                        'position':v.material.position,
+                        'replace':v.material.replace,
+                        'original':v.material.original,
+                        'store':v.material.store,
+                        'bin':v.material.bin
+                    }
+                })   //table数据
+                const data = this.formatJson(filterVal,list);
+                export_json_to_excel(tHeader,data,'已排程');  //导出文件名称
+            },
+            downloadAllJobs(){
+                if(!this.isDownloadAllJobs){
+                    this.isDownloadAllJobs = true
+                    JobApi.jobPages(this.query,{
+                        curPage: 1,
+                        pageSize: this.page.total
+                    }).then(v=>{
+                        const tHeader = ['包装数量','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位']
+                        const filterVal = ['count','quantity','gears','dish','workName','position','replace','original','store','bin']
+                        const list = v.data.items.map(v=>{
+                            return {
+                                'count':v.mission.count,
+                                'quantity':v.material.quantity,
+                                'gears':this.gearsDictionary[v.material.gears],
+                                'dish':this.dishDictionary[v.material.dish],
+                                'workName':v.workName,
+                                'position':v.material.position,
+                                'replace':v.material.replace,
+                                'original':v.material.original,
+                                'store':v.material.store,
+                                'bin':v.material.bin
+                            }
+                        })   //table数据
+                        const data = this.formatJson(filterVal,list);
+                        export_json_to_excel(tHeader,data,'未排程');  //导出文件名称
+                    }).finally(()=>{
+                        this.isDownloadAllJobs = false
+                    })
+                }
+
+            },
             upSort(item){
                 let machine = {
                     machineId:this.machine.machineId,
@@ -235,20 +309,30 @@
                     this.getMachineAll();
                 })
             },
-            startMachine(){
-                if(this.machines.length>0){
-                    let machine = this.machine;
-                    MachineApi.machineStart(machine.machineId,machine.version).then(v=>{
-                        this.getMachineAll();
+            async startMachine() {
+                if (this.machine.machineId) {
+                    let res = await this.$dialog.confirm({
+                        text: `请检查挡位是否正确，上料是否完毕？`,
+                        title: '开始'
                     })
+                    if(res){
+                        MachineApi.machineStart(this.machine.machineId, this.machine.version).then(v => {
+                            this.getMachineAll();
+                        })
+                    }
                 }
             },
-            stopMachine(){
-                if(this.machines.length>0){
-                    let machine = this.machine;
-                    MachineApi.machineStop(machine.machineId,machine.version).then(v=>{
-                        this.getMachineAll();
+            async stopMachine() {
+                if (this.machine.machineId) {
+                    let res = await this.$dialog.confirm({
+                        text: `请检查本次任务实际是否已完成？`,
+                        title: '结束'
                     })
+                    if(res){
+                        MachineApi.machineStop(this.machine.machineId, this.machine.version).then(v => {
+                            this.getMachineAll();
+                        })
+                    }
                 }
             },
             getMachineAll(){

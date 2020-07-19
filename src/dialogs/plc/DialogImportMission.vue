@@ -13,7 +13,7 @@
                     <v-row align="center" justify="start">
                         <v-btn class="mt-2" @click="data = []"><v-icon left>mdi-cancel</v-icon>取消</v-btn>
                         <v-spacer/>
-                        <v-btn color="orange darken-2" class="mt-2" @click="submit"><v-icon left>mdi-upload</v-icon>导入</v-btn>
+                        <v-btn color="orange darken-2" :loading="loading" class="mt-2" @click="submit"><v-icon left>mdi-upload</v-icon>导入</v-btn>
                     </v-row>
                 </template>
                 <template v-slot:item.materialCode="{item}">
@@ -153,8 +153,9 @@
                 if(!this.loading){
                     this.loading = true;
                     let batchNumber = (await MissionApi.getBatchNumber()).data
-                    for(let i=0;i<this.data.length;i++){
-                        let mission = this.data[i];
+                    let imports = this.data.filter(v=>mission.importStatus!=='导入成功')
+                    for(let i=0;i<imports.length;i++){
+                        let mission = imports[i];
                         if(!mission.materialCode){
                             mission.importStatus = "请输入物料号"
                         }else if(!mission.aoCode){

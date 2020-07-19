@@ -16,6 +16,9 @@
                         <v-text-field clearable v-model.trim="query.aoCode" label="请输入AO工序号" hide-details/>
                     </v-col>
                     <v-col cols="2">
+                        <v-select clearable v-model.trim="query.transform" :items="transforms" item-text="name" item-value="value" label="请选择状态" hide-details/>
+                    </v-col>
+                    <v-col cols="2">
                         <v-btn @click="search">
                             <v-icon left>mdi-magnify</v-icon>
                             搜索
@@ -85,7 +88,6 @@
     import DialogImportMission from "../../dialogs/plc/DialogImportMission";
     import Label from "../../components/label/Label";
     import MaterialApi from "../../api/plc/MaterialApi";
-
     export default {
         name: "Mission",
         mounted() {
@@ -94,8 +96,23 @@
         mixins:[TablePageMixins,DictionaryMixins],
         data() {
             return {
+                transforms: [
+                    {
+                        value: 1,
+                        name: '未转换'
+                    },
+                    {
+                        value: 2,
+                        name: '转换成功'
+                    },
+                    {
+                        value: 3,
+                        name: '转换时找不到物料'
+                    }
+                ],
                 headers: [
                     {text: '单号', sortable: false, value: 'missionId'},
+                    {text: '行号', sortable: false, value: 'lineNumber'},
                     {text: '物料号', sortable: false, value: 'materialCode',},
                     {text: 'AO工序号', sortable: false, value: 'aoCode',},
                     {text: '包装数量', sortable: false, value: 'count',},
@@ -109,6 +126,7 @@
                 query: {
                     materialCode: null,
                     aoCode: null,
+                    transform: null
                 },
                 transformType:{
                     1:'未转换',

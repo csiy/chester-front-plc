@@ -11,10 +11,13 @@
                             <v-text-field clearable v-model.trim="item.address" :rules="[rules.address]" label="请输入位置" required></v-text-field>
                         </v-col>
                         <template v-for="(v,index) in item.machineDishList">
-                            <v-col cols="5">
+                            <v-col cols="4">
+                                {{index+1}}号盘
+                            </v-col>
+                            <v-col cols="4">
                                 <v-select v-model.trim="v.gears" :rules="[rules.gears]" :items="gearsList" item-text="name" item-value="value" label="请选择挡位" required/>
                             </v-col>
-                            <v-col cols="5">
+                            <v-col cols="4">
                                 <v-select v-model.trim="v.dish" :rules="[rules.dish]" :items="dishList" item-text="name" item-value="value" label="请选择盘号" required/>
                             </v-col>
                             <v-col cols="2" v-if="index+1===item.machineDishList.length">

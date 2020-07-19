@@ -19,6 +19,14 @@ let getJobs = (machine) => {
     return Axios.post(`/plc/jobs/jobs`,machine);
 }
 
+let downloadMachineJobs = ()=>{
+    return Axios.get(`/plc/jobs/${jobId}`);
+}
+
+let downloadAllJobs = ()=>{
+    return Axios.get(`/plc/jobs/${jobId}`);
+}
+
 export default {
     jobPages,
     jobDelete,

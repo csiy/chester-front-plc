@@ -110,8 +110,8 @@
                 let items = [];
                 for(let i=0;i<item.machineDishList.length;i++){
                     items.push({
-                        value:i,
-                        name:i
+                        value:i+1,
+                        name:(i+1)+'号盘'
                     })
                 }
                 return items;
