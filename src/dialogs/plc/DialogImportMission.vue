@@ -153,7 +153,7 @@
                 if(!this.loading){
                     this.loading = true;
                     let batchNumber = (await MissionApi.getBatchNumber()).data
-                    let imports = this.data.filter(v=>mission.importStatus!=='导入成功')
+                    let imports = this.data.filter(v=>v.importStatus!=='导入成功')
                     for(let i=0;i<imports.length;i++){
                         let mission = imports[i];
                         if(!mission.materialCode){
