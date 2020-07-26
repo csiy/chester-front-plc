@@ -22,6 +22,10 @@
                         </v-btn>
                     </v-col>
                     <v-spacer/>
+                    <v-btn @click="downloadMaterials">
+                        <v-icon left>mdi-download</v-icon>
+                        导出
+                    </v-btn>
                     <v-btn @click="importItem" color="orange darken-2">
                         <v-icon left>mdi-upload</v-icon>
                         导入
@@ -78,6 +82,7 @@
     import TablePageMixins from "../../mixins/TablePageMixins";
     import DictionaryMixins from "../../mixins/DictionaryMixins";
     import DialogImportMaterial from "../../dialogs/plc/DialogImportMaterial";
+    import export_json_to_excel  from '../../lib/Export2Excel'
 
     export default {
         name: "Material",
@@ -89,10 +94,10 @@
             return {
                 headers: [
                     {text: '物料号', sortable: false, value: 'materialCode',width:150},
+                    {text: 'AO工序号', sortable: false, value: 'aoCode',width:150},
                     {text: '挡位', sortable: false, value: 'gears',width:150},
                     {text: '盘号', sortable: false, value: 'dish',width:150},
                     {text: '定额数量', sortable: false, value: 'quantity',width:150},
-                    {text: 'AO工序号', sortable: false, value: 'aoCode',width:150},
                     {text: '生产站位', sortable: false, value: 'position',width:150},
                     {text: '代换新号', sortable: false, value: 'replace',width:150},
                     {text: '原定额代换', sortable: false, value: 'original',width:150},
@@ -117,6 +122,36 @@
                 }
             }
         },
+        methods: {
+            formatJson(filterVal,jsonData){
+                return jsonData.map(v => filterVal.map(j=> v[j]))
+            },
+            downloadMaterials(){
+                MaterialApi.materialPages(this.query,{
+                    curPage: 1,
+                    pageSize: this.page.total
+                }).then(v=>{
+                    const tHeader = ['物料号','AO工序号','挡位','盘号','定额数量','生产站位','代换新号','原定额代换','存储区域','存储BIN位']
+                    const filterVal = ['materialCode','aoCode','gears','dish','quantity','position','replace','original','store','bin']
+                    const list = v.data.items.map(v=>{
+                        return {
+                            'quantity':v.quantity,
+                            'gears':this.gearsDictionary[v.gears],
+                            'dish':this.dishDictionary[v.dish],
+                            'position':v.position,
+                            'replace':v.replace,
+                            'original':v.original,
+                            'store':v.store,
+                            'bin':v.bin,
+                            'materialCode':v.materialCode,
+                            'aoCode':v.aoCode,
+                        }
+                    })   //table数据
+                    const data = this.formatJson(filterVal,list);
+                    export_json_to_excel(tHeader,data,'物料');  //导出文件名称
+                })
+            }
+        }
     }
 </script>
 

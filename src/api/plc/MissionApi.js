@@ -15,14 +15,21 @@ let missionImport = (mission,batchNumber) => {
 let missionUpdate = (mission) => {
     return Axios.put(`/plc/missions`,mission);
 }
-let getBatchNumber = () => {
-    return Axios.get(`/plc/missions/batchNumber`);
+
+let importMission = (missions) => {
+    return Axios.post(`/plc/missions/import`,{missions});
 }
+
+let verifyMission = (materials) => {
+    return Axios.post(`/plc/missions/verify`,{materials});
+}
+
 export default {
     missionPages,
     missionDelete,
     missionPlus,
     missionUpdate,
     missionImport,
-    getBatchNumber,
+    importMission,
+    verifyMission,
 }

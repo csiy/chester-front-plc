@@ -22,7 +22,7 @@
             </template>
             <template v-slot:item.runtimeDishNumber="{ item }">
                 <v-edit-dialog large :return-value.sync="item.runtimeDishNumber" @save="saveRuntimeDishNumber(item)">
-                    {{item.runtimeDishNumber!==-1?item.runtimeDishNumber:'暂未设置'}}
+                    {{item.runtimeDishNumber!==-1?numbers[item.runtimeDishNumber-1]:'暂未设置'}}
                     <template v-slot:input>
                         <v-select counter v-model="item.runtimeDishNumber" :items="getNumbers(item)" item-text="name" item-value="value" label="请选择盘号" required/>
                     </template>
@@ -35,7 +35,7 @@
                 {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
             </template>
             <template v-slot:item.machineDishList="{ item }">
-                {{item.machineDishList.map(v=>{return dishDictionary[v.dish]+'盘'+gearsDictionary[v.gears]+'挡'}).join('，')}}
+                {{item.machineDishList.map((v,index)=>{return numbers[index]+':'+dishDictionary[v.dish]+'盘'+gearsDictionary[v.gears]+'挡'}).join('，')}}
             </template>
             <template v-slot:item.action="{ item }">
                 <v-tooltip bottom>
@@ -82,6 +82,7 @@
         mixins:[TablePageMixins,DictionaryMixins],
         data() {
             return {
+                numbers: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
                 headers: [
                     {text: '机器Id', sortable: false, value: 'machineId',width:150},
                     {text: '位置', sortable: false, value: 'address',width:300},
@@ -111,7 +112,7 @@
                 for(let i=0;i<item.machineDishList.length;i++){
                     items.push({
                         value:i+1,
-                        name:(i+1)+'号盘'
+                        name:this.numbers[i]+'号盘'
                     })
                 }
                 return items;

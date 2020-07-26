@@ -11,16 +11,19 @@
                             <v-text-field clearable v-model.trim="machine.address" :rules="[rules.address]" label="请输入位置" required></v-text-field>
                         </v-col>
                         <template v-for="(v,index) in machine.machineDishList">
+                            <v-col cols="1" class="d-flex justify-center align-center">
+                                {{numbers[index]}}
+                            </v-col>
                             <v-col cols="5">
                                 <v-select v-model.trim="v.gears" :rules="[rules.gears]" :items="gearsList" item-text="name" item-value="value" label="请选择挡位" required/>
                             </v-col>
                             <v-col cols="5">
                                 <v-select v-model.trim="v.dish" :rules="[rules.dish]" :items="dishList" item-text="name" item-value="value" label="请选择盘号" required/>
                             </v-col>
-                            <v-col cols="2" v-if="index+1===machine.machineDishList.length">
+                            <v-col cols="1" v-if="index+1===machine.machineDishList.length&&index+1<numbers.length">
                                 <v-btn color="success darken-1" fab x-small dark @click="plus"><v-icon>mdi-plus</v-icon></v-btn>
                             </v-col>
-                            <v-col cols="2" v-else>
+                            <v-col cols="1" v-else>
                                 <v-btn color="pink darken-1" fab x-small dark @click="minus(index)"><v-icon>mdi-minus</v-icon></v-btn>
                             </v-col>
                         </template>
@@ -52,6 +55,7 @@
         data() {
             return {
                 valid: true,
+                numbers: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
                 machine: {
                     address: null,
                     machineDishList: [{

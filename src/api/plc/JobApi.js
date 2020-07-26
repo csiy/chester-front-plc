@@ -7,30 +7,17 @@ let jobDelete = (jobId,version) => {
     return Axios.delete(`/plc/jobs/${jobId}/${version}`);
 }
 
-let jobUpdate = (job) => {
-    return Axios.put(`/plc/jobs`,job);
-}
-
 let getJob = (jobId) => {
     return Axios.get(`/plc/jobs/${jobId}`);
 }
 
-let getJobs = (machine) => {
-    return Axios.post(`/plc/jobs/jobs`,machine);
-}
-
-let downloadMachineJobs = ()=>{
-    return Axios.get(`/plc/jobs/${jobId}`);
-}
-
-let downloadAllJobs = ()=>{
-    return Axios.get(`/plc/jobs/${jobId}`);
+let getJobs = (machineId) => {
+    return Axios.get(`/plc/jobs/jobs/${machineId}`);
 }
 
 export default {
     jobPages,
     jobDelete,
-    jobUpdate,
     getJob,
     getJobs,
 }

@@ -86,6 +86,7 @@
                 console.log(this.menus)
                 let rules = (await RuleApi.getRules().catch(v=>this.loading = false)).data;
                 let menus = (await MenuApi.getModifyMenus().catch(v=>this.loading = false)).data;
+                console.log(rules)
                 this.$dialog.show(DialogEditRole, {
                     role:item.name,
                     menus,

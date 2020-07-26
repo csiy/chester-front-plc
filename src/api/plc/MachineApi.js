@@ -20,22 +20,17 @@ let machineAll = () => {
     return Axios.get('/plc/machines/all');
 }
 
-let machineStart = (machineId,version) => {
-    return Axios.put(`/plc/machines/start/${machineId}/${version}`);
+let machineStart = (machineId) => {
+    return Axios.put(`/plc/machines/start/${machineId}`);
 }
 
-let machineStop = (machineId,version) => {
-    return Axios.put(`/plc/machines/stop/${machineId}/${version}`);
+let machineStop = (machineId) => {
+    return Axios.put(`/plc/machines/stop/${machineId}`);
 }
 
-let nextJob = (machineId,jobId,version) => {
-    return Axios.put(`/plc/machines/next/${machineId}/${jobId}/${version}`);
+let setJob = (machineId,jobId) => {
+    return Axios.put(`/plc/machines/set/${machineId}/${jobId}`);
 }
-
-let reSort = (machine) => {
-    return Axios.put(`/plc/machines/reSort`,machine);
-}
-
 
 export default {
     machinePages,
@@ -46,6 +41,5 @@ export default {
     machineAll,
     machineStart,
     machineStop,
-    nextJob,
-    reSort,
+    setJob,
 }

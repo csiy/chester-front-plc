@@ -149,30 +149,32 @@
                 }
                 return null
             },
-            async submit(){
+            submit(){
                 if(!this.loading){
                     this.loading = true;
-                    let batchNumber = (await MissionApi.getBatchNumber()).data
-                    let imports = this.data.filter(v=>v.importStatus!=='导入成功')
-                    for(let i=0;i<imports.length;i++){
-                        let mission = imports[i];
+                    let res = true
+                    for(let i=0;i<this.data.length;i++){
+                        let mission = this.data[i];
                         if(!mission.materialCode){
                             mission.importStatus = "请输入物料号"
+                            res = false
                         }else if(!mission.aoCode){
                             mission.importStatus = "请输入AO工序号"
+                            res = false
                         }else if(!mission.count){
                             mission.importStatus = "请输入包数"
-                        }else{
-                            mission.lineNumber = i+1
-                            if(mission.date&&mission.time){
-                                mission.dateTime = mission.date+" "+mission.time
-                            }
-                            await MissionApi.missionImport(mission,batchNumber).then(()=>{
-                                mission.importStatus = "导入成功"
-                            }).catch((v)=>{
-                                mission.importStatus = v
-                            })
+                            res = false
                         }
+                    }
+                    if(res){
+                        MissionApi.importMission(this.data).then(()=>{
+                            this.$message.success("导入成功")
+                            this.$emit('submit', true);
+                        }).finally(()=>{
+                            this.loading = false
+                        })
+                    }else{
+                        this.$message.warning("数据错误请检查")
                         this.loading = false;
                     }
                 }

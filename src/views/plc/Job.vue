@@ -19,21 +19,29 @@
                         <v-sheet width="100" dark class="orange lighten-1 pa-1">{{machine.machineId}}</v-sheet>
                         <v-sheet class="ml-4">运行状态：</v-sheet>
                         <v-sheet width="100" dark class="teal lighten-1 pa-1">{{machine.runState?'已经运行':'未运行'}}</v-sheet>
+                        <v-sheet class="ml-4">当前排程：</v-sheet>
+                        <v-sheet width="200" dark class="teal lighten-1 pa-1">
+                            {{runtimeJobSetStatusMap[machine.runtimeJobSetStatus]}}{{job?' ：'+job.jobId:''}}
+                        </v-sheet>
                     </div>
                 </div>
-                <div class="d-flex">
-                    <v-btn icon v-if="machine.linkState&&machine.runtimeJob">
+                <div class="d-flex" v-if="machine.linkState&&machine.runtimeJob">
+                    <v-btn icon v-if="machine.runtimeJobSetStatus===2">
                         <v-icon color="orange" @click="stopMachine" v-if="machine.runState">mdi-stop-circle-outline</v-icon>
                         <v-icon color="primary" v-else @click="startMachine">mdi-play-circle-outline</v-icon>
                     </v-btn>
-                    <!--                            <v-btn icon v-if="machine.linkState&&!machine.runState&&machine.jobs&&machine.jobs.length>0">-->
-                    <!--                                <v-icon color="light-green" @click="nextJob">mdi-skip-next-outline</v-icon>-->
-                    <!--                            </v-btn>-->
+                    <div v-else class="d-flex align-center" v-if="machine.runtimeJobSetStatus===1">
+                        <v-btn color="orange" text @click="setRuntimeJob(job)">重新设置</v-btn>
+                    </div>
+                </div>
+                <div class="d-flex" v-if="machine.linkState&&machine.runtimeJobSetStatus===0&&jobs&&jobs.length>0">
+                    <v-btn color="orange" text @click="setRuntimeJob(jobs[0])">下一个任务</v-btn>
                 </div>
             </v-card>
             <v-divider/>
             <v-card elevation="0" :loading="loadingGetJob" v-if="job" class="d-flex justify-start flex-wrap pa-4">
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包装数量:{{job.mission.count}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包装总数:{{job.mission.count}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包数:{{job.mission.count*job.material.quantity}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">定额数量:{{job.material.quantity}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.materialCode">物料号:{{job.material.materialCode}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.aoCode">AO工序号:{{job.material.aoCode}}</div>
@@ -62,6 +70,9 @@
                     </v-btn>
                 </v-row>
             </template>
+            <template v-slot:item.total="{ item }">
+                {{item.mission.count*item.material.quantity}}
+            </template>
             <template v-slot:item.gears="{ item }">
                 {{gearsDictionary[item.material.gears]}}
             </template>
@@ -69,21 +80,13 @@
                 {{dishDictionary[item.material.dish]}}
             </template>
             <template v-slot:item.action="{ item }">
-                <v-tooltip v-if="item.jobId!==jobs[0].jobId" bottom>
+                <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="upSort(item)">
-                            <v-icon>mdi-upload</v-icon>
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.jobId,item.version)">
+                            <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                     </template>
-                    <span>上移</span>
-                </v-tooltip>
-                <v-tooltip v-if="item.jobId!==jobs[jobs.length-1].jobId" bottom>
-                    <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="downSort(item)">
-                            <v-icon>mdi-download</v-icon>
-                        </v-btn>
-                    </template>
-                    <span>下移</span>
+                    <span>删除</span>
                 </v-tooltip>
             </template>
             <template v-slot:no-data>
@@ -109,6 +112,10 @@
                     </v-btn>
                 </v-row>
             </template>
+
+            <template v-slot:item.total="{ item }">
+                {{item.mission.count*item.material.quantity}}
+            </template>
             <template v-slot:item.state="{ item }">
                 {{getJobState(item)}}
             </template>
@@ -124,7 +131,7 @@
             <template v-slot:item.action="{ item }">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.machineId,item.version)">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.jobId,item.version)">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                     </template>
@@ -160,34 +167,44 @@
         mixins:[TablePageMixins,DictionaryMixins],
         data() {
             return {
+                runtimeJobSetStatusMap:{
+                    0:'未设置',
+                    1:'正在设置',
+                    2:'已设置',
+                },
                 headers1: [
-                    {text: '操作', sortable: false, value: 'action',width:140},
-                    {text: '包装数量', sortable: false, value: 'mission.count',width:80},
-                    {text: '定额数量', sortable: false, value: 'material.quantity',width:80},
-                    {text: '挡位', sortable: false, value: 'gears',width:80},
-                    {text: '盘号', sortable: false, value: 'dish',width:80},
-                    {text: '指派员工', sortable: false, value: 'workName',width:120},
-                    {text: '生产站位', sortable: false, value: 'material.position',width:120},
-                    {text: '代换新号', sortable: false, value: 'material.replace',width:120},
-                    {text: '原定额代换', sortable: false, value: 'material.original',width:120},
-                    {text: '存储区域', sortable: false, value: 'material.store',width:120},
-                    {text: '存储BIN位', sortable: false, value: 'material.bin',width:120},
+                    {text: '任务Id', sortable: false, value: 'jobId'},
+                    {text: '包装总数', sortable: false, value: 'total'},
+                    {text: '包数', sortable: false, value: 'mission.count'},
+                    {text: '定额数量', sortable: false, value: 'material.quantity'},
+                    {text: '挡位', sortable: false, value: 'gears'},
+                    {text: '盘号', sortable: false, value: 'dish'},
+                    {text: '指派员工', sortable: false, value: 'workName'},
+                    {text: '生产站位', sortable: false, value: 'material.position'},
+                    {text: '代换新号', sortable: false, value: 'material.replace'},
+                    {text: '原定额代换', sortable: false, value: 'material.original'},
+                    {text: '存储区域', sortable: false, value: 'material.store'},
+                    {text: '存储BIN位', sortable: false, value: 'material.bin'},
+                    {text: '物料号', sortable: false, value: 'material.materialCode'},
+                    {text: 'AO工序号', sortable: false, value: 'material.aoCode'},
+                    {text: '操作', sortable: false, value: 'action'},
                 ],
                 headers: [
-                    {text: '操作', sortable: false, value: 'action',width:120},
-                    {text: '包装数量', sortable: false, value: 'mission.count',width:80},
-                    {text: '定额数量', sortable: false, value: 'material.quantity',width:80},
-                    {text: '挡位', sortable: false, value: 'gears',width:80},
-                    {text: '盘号', sortable: false, value: 'dish',width:80},
-                    {text: '指派员工', sortable: false, value: 'workName',width:150},
-                    {text: '生产站位', sortable: false, value: 'material.position',width:150},
-                    {text: '代换新号', sortable: false, value: 'material.replace',width:150},
-                    {text: '原定额代换', sortable: false, value: 'material.original',width:150},
-                    {text: '存储区域', sortable: false, value: 'material.store',width:150},
-                    {text: '存储BIN位', sortable: false, value: 'material.bin',width:150},
-                    {text: '物料号', sortable: false, value: 'material.materialCode',width:150},
-                    {text: 'AO工序号', sortable: false, value: 'material.aoCode',width:150},
-                    {text: '状态', sortable: false, value: 'state',width:200},
+                    {text: '任务Id', sortable: false, value: 'jobId'},
+                    {text: '包装总数', sortable: false, value: 'total'},
+                    {text: '包数', sortable: false, value: 'mission.count'},
+                    {text: '定额数量', sortable: false, value: 'material.quantity'},
+                    {text: '挡位', sortable: false, value: 'gears'},
+                    {text: '盘号', sortable: false, value: 'dish'},
+                    {text: '指派员工', sortable: false, value: 'workName'},
+                    {text: '生产站位', sortable: false, value: 'material.position'},
+                    {text: '代换新号', sortable: false, value: 'material.replace'},
+                    {text: '原定额代换', sortable: false, value: 'material.original'},
+                    {text: '存储区域', sortable: false, value: 'material.store'},
+                    {text: '存储BIN位', sortable: false, value: 'material.bin'},
+                    {text: '物料号', sortable: false, value: 'material.materialCode'},
+                    {text: 'AO工序号', sortable: false, value: 'material.aoCode'},
+                    {text: '操作', sortable: false, value: 'action'},
                 ],
                 interval: null,
                 machine: {},
@@ -228,8 +245,8 @@
                 return jsonData.map(v => filterVal.map(j=> v[j]))
             },
             downloadMachineJobs(){
-                const tHeader = ['包装数量','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位']
-                const filterVal = ['count','quantity','gears','dish','workName','position','replace','original','store','bin']
+                const tHeader = ['包装总数','包数','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位','物料号','AO工序号']
+                const filterVal = ['total','count','quantity','gears','dish','workName','position','replace','original','store','bin','materialCode','aoCode']
                 const list = this.jobs.map(v=>{
                     return {
                         'count':v.mission.count,
@@ -241,7 +258,10 @@
                         'replace':v.material.replace,
                         'original':v.material.original,
                         'store':v.material.store,
-                        'bin':v.material.bin
+                        'bin':v.material.bin,
+                        'materialCode':v.material.materialCode,
+                        'aoCode':v.material.aoCode,
+                        'total':v.mission.count*v.material.quantity
                     }
                 })   //table数据
                 const data = this.formatJson(filterVal,list);
@@ -254,8 +274,8 @@
                         curPage: 1,
                         pageSize: this.page.total
                     }).then(v=>{
-                        const tHeader = ['包装数量','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位']
-                        const filterVal = ['count','quantity','gears','dish','workName','position','replace','original','store','bin']
+                        const tHeader = ['包装总数','包数','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位','物料号','AO工序号']
+                        const filterVal = ['total','count','quantity','gears','dish','workName','position','replace','original','store','bin','materialCode','aoCode']
                         const list = v.data.items.map(v=>{
                             return {
                                 'count':v.mission.count,
@@ -267,7 +287,10 @@
                                 'replace':v.material.replace,
                                 'original':v.material.original,
                                 'store':v.material.store,
-                                'bin':v.material.bin
+                                'bin':v.material.bin,
+                                'materialCode':v.material.materialCode,
+                                'aoCode':v.material.aoCode,
+                                'total':v.mission.count*v.material.quantity
                             }
                         })   //table数据
                         const data = this.formatJson(filterVal,list);
@@ -278,36 +301,23 @@
                 }
 
             },
-            upSort(item){
-                let machine = {
-                    machineId:this.machine.machineId,
-                    version: this.machine.version,
-                    jobs: [...this.machine.jobs]
-                };
-                let index = machine.jobs.indexOf(item.jobId);
-                let replaceIndex = index-1;
-                machine.jobs.splice(index,1,...machine.jobs.splice(replaceIndex, 1 , machine.jobs[index]));
-                MachineApi.reSort(machine).then(v=>{
+            setRuntimeJob(item){
+                MachineApi.setJob(this.machine.machineId,item.jobId).then(v=>{
                     this.getMachineAll();
                 })
             },
-            downSort(item){
-                let machine = {
-                    machineId:this.machine.machineId,
-                    version: this.machine.version,
-                    jobs: [...this.machine.jobs]
-                };
-                let index = machine.jobs.indexOf(item.jobId);
-                let replaceIndex = index+1;
-                machine.jobs.splice(index,1,...machine.jobs.splice(replaceIndex, 1 , machine.jobs[index]));
-                MachineApi.reSort(machine).then(v=>{
-                    this.getMachineAll();
-                })
-            },
-            nextJob(){
-                MachineApi.nextJob(this.machine.machineId,this.machine.jobs[0],this.machine.version).then(v=>{
-                    this.getMachineAll();
-                })
+            async deleteItem(id,version) {
+                if(this.actions.remove){
+                    let res = await this.$dialog.confirm({
+                        text: `确认要删除吗？删除后将无法恢复！`,
+                        title: '删除'
+                    })
+                    if (res) {
+                        this.actions.remove(id,version).then(() => {
+                            this.getMachineAll();
+                        });
+                    }
+                }
             },
             async startMachine() {
                 if (this.machine.machineId) {
@@ -385,20 +395,11 @@
                 }
             },
             getJobs(){
-                if(!this.loadingGetJobs&&this.machine.jobs&&this.machine.jobs.length>0){
+                if(!this.loadingGetJobs){
                     this.loadingGetJobs = true;
-                    JobApi.getJobs(this.machine).then(v=>{
+                    JobApi.getJobs(this.machine.machineId).then(v=>{
                         this.loadingGetJobs = false;
-                        let jobs = [];
-                        for(let i in this.machine.jobs){
-                            let job = v.data.filter(v=>v.jobId===this.machine.jobs[i])[0];
-                            jobs.push({
-                                ...job,
-                                gears:job.material.gears,
-                                dish:job.material.dish
-                            })
-                        }
-                        this.jobs = jobs;
+                        this.jobs = v.data;
                     })
                 }else {
                     this.jobs = []

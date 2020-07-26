@@ -23,7 +23,7 @@
                         <div v-for="node in selection" :key="node.id">
                             <v-subheader>{{ node.data.name }}</v-subheader>
                             <v-row class="mx-0 px-2">
-                                <v-checkbox  v-for="item in rules.filter(v=>node.data.url.indexOf(v.path)>-1)" :value="item.ruleId" v-model="ruleList" class="mx-2" :key="item.ruleId.counter" :label="item.remark"/>
+                                <v-checkbox  v-for="item in rules.filter(v=>v.path.indexOf(node.data.path)>-1)" :value="item.ruleId" v-model="ruleList" class="mx-2" :key="item.ruleId.counter" :label="item.remark"/>
                             </v-row>
                         </div>
                     </v-col>
