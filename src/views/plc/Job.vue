@@ -40,8 +40,8 @@
             </v-card>
             <v-divider/>
             <v-card elevation="0" :loading="loadingGetJob" v-if="job" class="d-flex justify-start flex-wrap pa-4">
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包装总数:{{job.mission.count}}</div>
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包数:{{job.mission.count*job.material.quantity}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包装总数:{{job.mission.count*job.material.quantity}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">包数:{{job.mission.count}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">定额数量:{{job.material.quantity}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.materialCode">物料号:{{job.material.materialCode}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.aoCode">AO工序号:{{job.material.aoCode}}</div>
