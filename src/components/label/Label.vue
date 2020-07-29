@@ -20,7 +20,7 @@
                         <div class="val">{{form.quantity}}</div>
                     </div>
                     <div class="label-item">
-                        <div class="title">生成站位</div>
+                        <div class="title">生产站位</div>
                         <div class="val">{{form.position}}</div>
                     </div>
                 </div>

@@ -46,7 +46,7 @@
                 {{dishDictionary[item.dish]}}
             </template>
             <template v-slot:item.action="{ item }">
-                <v-tooltip v-if="item.transform!==2" bottom>
+                <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="updateItem(item)">
                             <v-icon>mdi-cog-outline</v-icon>

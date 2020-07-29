@@ -51,7 +51,7 @@
                     <span>打印</span>
                 </v-tooltip>
                 <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
+                    <template v-if="item.transform!==2" v-slot:activator="{ on }">
                         <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="updateItem(item)">
                             <v-icon>mdi-cog-outline</v-icon>
                         </v-btn>
