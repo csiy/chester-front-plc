@@ -1,11 +1,14 @@
 <template>
     <v-container fluid>
         <v-data-table
+                v-model="selected"
                 :loading="loading"
                 :headers="headers"
                 :items="items"
                 hide-default-footer
                 :loading-text="loadingText"
+                show-select
+                item-key="materialId"
                 class="elevation-1 px-4 pb-4">
             <template v-slot:top>
                 <v-row align="center" justify="start">
@@ -22,6 +25,10 @@
                         </v-btn>
                     </v-col>
                     <v-spacer/>
+                    <v-btn @click="bathMission" color="success" :disabled="selected.length==0">
+                        <v-icon left>mdi-shuffle-variant</v-icon>
+                        生成任务
+                    </v-btn>
                     <v-btn @click="downloadMaterials">
                         <v-icon left>mdi-download</v-icon>
                         导出
@@ -35,9 +42,6 @@
                         添加
                     </v-btn>
                 </v-row>
-            </template>
-            <template v-slot:item.gears="{ item }">
-                {{gearsDictionary[item.gears]}}
             </template>
             <template v-slot:item.updatedOn="{ item }">
                 {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
@@ -83,6 +87,7 @@
     import DictionaryMixins from "../../mixins/DictionaryMixins";
     import DialogImportMaterial from "../../dialogs/plc/DialogImportMaterial";
     import export_json_to_excel  from '../../lib/Export2Excel'
+    import DialogBatchMission from "../../dialogs/plc/DialogBatchMission";
 
     export default {
         name: "Material",
@@ -92,16 +97,13 @@
         mixins:[TablePageMixins,DictionaryMixins],
         data() {
             return {
+                selected:[],
                 headers: [
                     {text: '物料号', sortable: false, value: 'materialCode',width:150},
                     {text: 'AO工序号', sortable: false, value: 'aoCode',width:150},
-                    {text: '挡位', sortable: false, value: 'gears',width:150},
-                    {text: '盘号', sortable: false, value: 'dish',width:150},
+                    {text: '盘号', sortable: false, value: 'disk',width:150},
                     {text: '定额数量', sortable: false, value: 'quantity',width:150},
                     {text: '生产站位', sortable: false, value: 'position',width:150},
-                    {text: '代换新号', sortable: false, value: 'replace',width:150},
-                    {text: '原定额代换', sortable: false, value: 'original',width:150},
-                    {text: '存储区域', sortable: false, value: 'store',width:150},
                     {text: '存储BIN位', sortable: false, value: 'bin',width:150},
                     {text: '操作时间', sortable: false, value: 'updatedOn',width:150},
                     {text: '操作人', sortable: false, value: 'updatedName',width:150},
@@ -126,25 +128,30 @@
             formatJson(filterVal,jsonData){
                 return jsonData.map(v => filterVal.map(j=> v[j]))
             },
+            bathMission(){
+                this.$dialog.show(DialogBatchMission, {
+                    waitForResult: true,//等待弹出框返回值
+                    width:1200,
+                    items: this.selected
+                }).then((v) => {
+                    this.search();
+                })
+            },
             downloadMaterials(){
                 MaterialApi.materialPages(this.query,{
                     curPage: 1,
                     pageSize: this.page.total
                 }).then(v=>{
-                    const tHeader = ['物料号','AO工序号','挡位','盘号','定额数量','生产站位','代换新号','原定额代换','存储区域','存储BIN位']
-                    const filterVal = ['materialCode','aoCode','gears','dish','quantity','position','replace','original','store','bin']
+                    const tHeader = ['物料号','AO工序号','盘号','定额数量','生产站位','存储BIN位']
+                    const filterVal = ['materialCode','aoCode','disk','quantity','position','bin']
                     const list = v.data.items.map(v=>{
                         return {
-                            'quantity':v.quantity,
-                            'gears':this.gearsDictionary[v.gears],
-                            'dish':this.dishDictionary[v.dish],
-                            'position':v.position,
-                            'replace':v.replace,
-                            'original':v.original,
-                            'store':v.store,
-                            'bin':v.bin,
                             'materialCode':v.materialCode,
                             'aoCode':v.aoCode,
+                            'disk':v.disk,
+                            'quantity':v.quantity,
+                            'position':v.position,
+                            'bin':v.bin,
                         }
                     })   //table数据
                     const data = this.formatJson(filterVal,list);

@@ -1,11 +1,10 @@
 <template>
     <v-card :loading="loading">
         <v-card-title>
-            <span class="headline">导入任务</span>
+            <span class="headline">生成任务</span>
         </v-card-title>
         <v-card-text>
-            <FileDrag v-if="data.length===0" @data="dataChange" link="/download/计划单导入模板.xlsx"/>
-            <v-data-table v-else
+            <v-data-table
                           :headers="headers"
                           :items="data"
                           class="elevation-1 px-4 pb-4">
@@ -13,7 +12,7 @@
                     <v-row align="center" justify="start">
                         <v-btn class="mt-2" @click="data = []"><v-icon left>mdi-cancel</v-icon>取消</v-btn>
                         <v-spacer/>
-                        <v-btn color="orange darken-2" :loading="loading" class="mt-2" @click="submit"><v-icon left>mdi-upload</v-icon>导入</v-btn>
+                        <v-btn color="orange darken-2" :loading="loading" class="mt-2" @click="submit"><v-icon left>mdi-upload</v-icon>生成</v-btn>
                     </v-row>
                 </template>
                 <template v-slot:item.materialCode="{item}">
@@ -66,12 +65,19 @@
 </template>
 
 <script>
-    import FileDrag from "../../components/base/FileDrag";
     import MissionApi from "../../api/plc/MissionApi";
-    import moment from 'moment'
     export default {
-        name: "DialogImportMission",
-        components: {FileDrag},
+        name: "DialogBatchMission",
+        props:['items'],
+        created() {
+            this.data = this.items.map(v=>{
+                return {
+                    materialCode:v.materialCode,
+                    aoCode:v.aoCode,
+                    count:20
+                }
+            })
+        },
         data(){
             return {
                 loading: false,

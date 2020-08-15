@@ -6,8 +6,7 @@
                     <v-card :color="active ? 'primary' : 'grey lighten-3'" :dark="active" class="mr-4 pa-2" height="100" width="150" @click="toggle">
                         <div>设备:{{item.machineId}}</div>
                         <div class="d-flex text-center align-center">状态:<v-sheet dark class="ml-2 lighten-1 px-1" :color="item.linkState?'orange':'teal'">{{item.linkState?'已链接':'未链接'}}</v-sheet></div>
-                        <div>当前盘号:{{item.runtimeDishNumber===-1?"未设置":item.runtimeDishNumber}}</div>
-                        <div>当前盘:{{!item.runtimeDish?"未设置":dishDictionary[item.runtimeDish.dish]+'盘'+gearsDictionary[item.runtimeDish.gears]+'挡'}}</div>
+                        <div>当前盘:{{item.disk}}</div>
                     </v-card>
                 </v-slide-item>
             </v-slide-group>
@@ -45,8 +44,7 @@
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.quantity">定额数量:{{job.material.quantity}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.materialCode">物料号:{{job.material.materialCode}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.aoCode">AO工序号:{{job.material.aoCode}}</div>
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.gears">挡位:{{gearsDictionary[job.material.gears]}}</div>
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.dish">盘号:{{dishDictionary[job.material.dish]}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.disk">盘号:{{job.material.disk}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.position">生产站位:{{job.material.position}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.store">存储区域:{{job.material.store}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.bin">存储BIN位:{{job.material.bin}}</div>
@@ -54,7 +52,7 @@
         </v-card>
         <v-data-table
                 :loading="loadingGetJobs"
-                :headers="headers1 "
+                :headers="headers "
                 :items="jobs"
                 :loading-text="loadingText"
                 class="elevation-1 px-4 pb-4 my-4">
@@ -70,16 +68,15 @@
                     </v-btn>
                 </v-row>
             </template>
-            <template v-slot:item.total="{ item }">
-                {{item.mission.count*item.material.quantity}}
-            </template>
-            <template v-slot:item.gears="{ item }">
-                {{gearsDictionary[item.material.gears]}}
-            </template>
-            <template v-slot:item.dish="{ item }">
-                {{dishDictionary[item.material.dish]}}
-            </template>
             <template v-slot:item.action="{ item }">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="printItem(item)">
+                            <v-icon>mdi-cloud-print-outline</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>打印</span>
+                </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.jobId,item.version)">
@@ -112,23 +109,15 @@
                     </v-btn>
                 </v-row>
             </template>
-
-            <template v-slot:item.total="{ item }">
-                {{item.mission.count*item.material.quantity}}
-            </template>
-            <template v-slot:item.state="{ item }">
-                {{getJobState(item)}}
-            </template>
-            <template v-slot:item.gears="{ item }">
-                {{gearsDictionary[item.material.gears]}}
-            </template>
-            <template v-slot:item.updatedOn="{ item }">
-                {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
-            </template>
-            <template v-slot:item.dish="{ item }">
-                {{dishDictionary[item.material.dish]}}
-            </template>
             <template v-slot:item.action="{ item }">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="printItem(item)">
+                            <v-icon>mdi-cloud-print-outline</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>打印</span>
+                </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.jobId,item.version)">
@@ -156,6 +145,8 @@
     import JobApi from "../../api/plc/JobApi";
     import MachineApi from "../../api/plc/MachineApi";
     import export_json_to_excel  from '../../lib/Export2Excel'
+    import MaterialApi from "../../api/plc/MaterialApi";
+    import Label from "../../components/label/Label";
 
     export default {
         name: "Job",
@@ -172,38 +163,15 @@
                     1:'正在设置',
                     2:'已设置',
                 },
-                headers1: [
-                    {text: '任务Id', sortable: false, value: 'jobId'},
-                    {text: '包装总数', sortable: false, value: 'total'},
-                    {text: '包数', sortable: false, value: 'mission.count'},
-                    {text: '定额数量', sortable: false, value: 'material.quantity'},
-                    {text: '挡位', sortable: false, value: 'gears'},
-                    {text: '盘号', sortable: false, value: 'dish'},
-                    {text: '指派员工', sortable: false, value: 'workName'},
-                    {text: '生产站位', sortable: false, value: 'material.position'},
-                    {text: '代换新号', sortable: false, value: 'material.replace'},
-                    {text: '原定额代换', sortable: false, value: 'material.original'},
-                    {text: '存储区域', sortable: false, value: 'material.store'},
-                    {text: '存储BIN位', sortable: false, value: 'material.bin'},
-                    {text: '物料号', sortable: false, value: 'material.materialCode'},
-                    {text: 'AO工序号', sortable: false, value: 'material.aoCode'},
-                    {text: '操作', sortable: false, value: 'action'},
-                ],
                 headers: [
                     {text: '任务Id', sortable: false, value: 'jobId'},
-                    {text: '包装总数', sortable: false, value: 'total'},
-                    {text: '包数', sortable: false, value: 'mission.count'},
-                    {text: '定额数量', sortable: false, value: 'material.quantity'},
-                    {text: '挡位', sortable: false, value: 'gears'},
-                    {text: '盘号', sortable: false, value: 'dish'},
-                    {text: '指派员工', sortable: false, value: 'workName'},
-                    {text: '生产站位', sortable: false, value: 'material.position'},
-                    {text: '代换新号', sortable: false, value: 'material.replace'},
-                    {text: '原定额代换', sortable: false, value: 'material.original'},
-                    {text: '存储区域', sortable: false, value: 'material.store'},
-                    {text: '存储BIN位', sortable: false, value: 'material.bin'},
                     {text: '物料号', sortable: false, value: 'material.materialCode'},
                     {text: 'AO工序号', sortable: false, value: 'material.aoCode'},
+                    {text: '包数', sortable: false, value: 'mission.count'},
+                    {text: '定额数量', sortable: false, value: 'material.quantity'},
+                    {text: '盘号', sortable: false, value: 'material.disk'},
+                    {text: '生产站位', sortable: false, value: 'material.position'},
+                    {text: '存储BIN位', sortable: false, value: 'material.bin'},
                     {text: '操作', sortable: false, value: 'action'},
                 ],
                 interval: null,
@@ -245,23 +213,18 @@
                 return jsonData.map(v => filterVal.map(j=> v[j]))
             },
             downloadMachineJobs(){
-                const tHeader = ['包装总数','包数','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位','物料号','AO工序号']
-                const filterVal = ['total','count','quantity','gears','dish','workName','position','replace','original','store','bin','materialCode','aoCode']
+                const tHeader = ['任务Id','物料号','AO工序号','包数','定额数量','盘号','生产站位','存储BIN位']
+                const filterVal = ['jobId','materialCode','aoCode','count','quantity','disk','position','bin']
                 const list = this.jobs.map(v=>{
                     return {
-                        'count':v.mission.count,
-                        'quantity':v.material.quantity,
-                        'gears':this.gearsDictionary[v.material.gears],
-                        'dish':this.dishDictionary[v.material.dish],
-                        'workName':v.workName,
-                        'position':v.material.position,
-                        'replace':v.material.replace,
-                        'original':v.material.original,
-                        'store':v.material.store,
-                        'bin':v.material.bin,
+                        'jobId':v.jobId,
                         'materialCode':v.material.materialCode,
                         'aoCode':v.material.aoCode,
-                        'total':v.mission.count*v.material.quantity
+                        'count':v.mission.count,
+                        'quantity':v.material.quantity,
+                        'disk':v.material.disk,
+                        'position':v.material.position,
+                        'bin':v.material.bin,
                     }
                 })   //table数据
                 const data = this.formatJson(filterVal,list);
@@ -274,23 +237,18 @@
                         curPage: 1,
                         pageSize: this.page.total
                     }).then(v=>{
-                        const tHeader = ['包装总数','包数','定额数量','挡位','盘号','指派员工','生产站位','代换新号','原定额代换','存储区域','存储BIN位','物料号','AO工序号']
-                        const filterVal = ['total','count','quantity','gears','dish','workName','position','replace','original','store','bin','materialCode','aoCode']
+                        const tHeader = ['任务Id','物料号','AO工序号','包数','定额数量','盘号','生产站位','存储BIN位']
+                        const filterVal = ['jobId','materialCode','aoCode','count','quantity','disk','position','bin']
                         const list = v.data.items.map(v=>{
                             return {
-                                'count':v.mission.count,
-                                'quantity':v.material.quantity,
-                                'gears':this.gearsDictionary[v.material.gears],
-                                'dish':this.dishDictionary[v.material.dish],
-                                'workName':v.workName,
-                                'position':v.material.position,
-                                'replace':v.material.replace,
-                                'original':v.material.original,
-                                'store':v.material.store,
-                                'bin':v.material.bin,
+                                'jobId':v.jobId,
                                 'materialCode':v.material.materialCode,
                                 'aoCode':v.material.aoCode,
-                                'total':v.mission.count*v.material.quantity
+                                'count':v.mission.count,
+                                'quantity':v.material.quantity,
+                                'disk':v.material.disk,
+                                'position':v.material.position,
+                                'bin':v.material.bin,
                             }
                         })   //table数据
                         const data = this.formatJson(filterVal,list);
@@ -405,17 +363,23 @@
                     this.jobs = []
                 }
             },
-            getJobState(item){
-                if(item['isError']){
-                    return item['errorMessages'].join("，")
-                }else{
-                    if(item.jobStatus==="SCHEDULER"){
-                        return "已排程"
-                    }else{
-                        return "未排程"
-                    }
-                }
-            }
+            printItem(item){
+                MaterialApi.getMaterial(item.material.materialCode,item.material.aoCode).then(v=>{
+                    this.$dialog.show(Label, {
+                        pageSize: {
+                            w:6,
+                            h:4
+                        },
+                        labelSize:{
+                            w:6,
+                            h:4
+                        },
+                        missionId: item.mission.missionId,
+                        form: {...v.data},
+                        width:600,
+                    })
+                })
+            },
         }
     }
 </script>

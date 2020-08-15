@@ -14,25 +14,13 @@
                             <v-text-field clearable v-model.trim="item.aoCode" :rules="[rules.aoCode]" label="请输入AO工序号" required></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="6">
-                            <v-select v-model.trim="item.gears" :rules="[rules.gears]" :items="gearsList" item-text="name" item-value="value" label="请选择挡位" required/>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                            <v-select v-model.trim="item.dish" :rules="[rules.dish]" :items="dishList" item-text="name" item-value="value" label="请选择盘号" required/>
+                            <v-text-field clearable v-model.trim="item.disk" :rules="[rules.disk]" label="请输入盘号" required></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="6">
                             <v-text-field clearable v-model.trim="item.quantity" :rules="[rules.quantity]" label="请输入定额数量" required></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="6">
                             <v-text-field clearable v-model.trim="item.position" :rules="[rules.position]" label="请输入生产站位" required></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                            <v-text-field clearable v-model.trim="item.replace" :rules="[rules.replace]" label="请输入代换新号" required></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                            <v-text-field clearable v-model.trim="item.original" :rules="[rules.original]" label="请输入原定额代换" required></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="6">
-                            <v-text-field clearable v-model.trim="item.store" :rules="[rules.store]" label="请输入存储区域" required></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="6">
                             <v-text-field clearable v-model.trim="item.bin" :rules="[rules.bin]" label="请输入存储BIN位" required></v-text-field>
@@ -58,55 +46,19 @@
                 valid: true,
                 item: {
                     materialCode: null,
-                    gears: 'ONE',
-                    dish: 'LARGE',
+                    disk: null,
                     quantity: null,
                     aoCode: null,
                     position: null,
-                    replace: null,
-                    original: null,
-                    store: null,
                     bin: null
                 },
-                dishList: [
-                    {
-                        value: 'LARGE',
-                        name: '大'
-                    },
-                    {
-                        value: 'NORMAL',
-                        name: '中'
-                    },
-                    {
-                        value: 'SMALL',
-                        name: '小'
-                    },
-                ],
-                gearsList: [
-                    {
-                        value: 'ONE',
-                        name: '1'
-                    },
-                    {
-                        value: 'TWO',
-                        name: '2'
-                    },
-                    {
-                        value: 'THREE',
-                        name: '3'
-                    }
-                ],
                 loading:false,
                 rules: {
                     materialCode: (v) => v!=null||'请输入物料号',
-                    gears: (v) => v!=null||'请选择挡位',
-                    dish: (v) => v!=null||'请选择盘号',
+                    disk: (v) => v!=null||'请选择盘号',
                     quantity: (v) => /^[1-9]\d*$/.test(v)&&v<100000000||'请输入定额数量',
                     aoCode: (v) => v!=null||'请输入AO工序号',
                     position: (v) => v!=null||'请输入生产站位',
-                    replace: (v) => v!=null||'请输入代换新号',
-                    original: (v) => v!=null||'请输入原定额代换',
-                    store: (v) => v!=null||'请输入存储区域',
                     bin: (v) => v!=null||'请输入存储BIN位',
                 },
             }
