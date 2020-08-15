@@ -46,7 +46,6 @@
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.aoCode">AO工序号:{{job.material.aoCode}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.disk">盘号:{{job.material.disk}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.position">生产站位:{{job.material.position}}</div>
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.store">存储区域:{{job.material.store}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="job.material.bin">存储BIN位:{{job.material.bin}}</div>
             </v-card>
         </v-card>
