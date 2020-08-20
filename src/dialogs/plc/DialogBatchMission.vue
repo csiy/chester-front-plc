@@ -74,7 +74,7 @@
                 return {
                     materialCode:v.materialCode,
                     aoCode:v.aoCode,
-                    count:20
+                    count:1
                 }
             })
         },
