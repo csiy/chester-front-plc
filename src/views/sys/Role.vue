@@ -9,7 +9,7 @@
             <template v-slot:top>
                 <v-row align="center" justify="start">
                     <v-spacer/>
-                    <v-btn @click="plusItem" color="orange darken-2" class="mt-4">
+                    <v-btn small @click="plusItem" color="orange darken-2" class="mt-4">
                         <v-icon left>mdi-plus-outline</v-icon>
                         添加
                     </v-btn>

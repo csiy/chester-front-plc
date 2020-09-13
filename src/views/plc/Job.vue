@@ -50,10 +50,13 @@
             </v-card>
         </v-card>
         <v-data-table
+                v-model="selected"
                 :loading="loadingGetJobs"
                 :headers="headers "
                 :items="jobs"
                 :loading-text="loadingText"
+                show-select
+                item-key="jobId"
                 class="elevation-1 px-4 pb-4 my-4">
             <template v-slot:top>
                 <v-row align="center" justify="start">
@@ -61,7 +64,11 @@
                         <div class="display-2">已排程列表</div>
                     </v-col>
                     <v-spacer/>
-                    <v-btn @click="downloadMachineJobs">
+                    <v-btn @click="printItems" small color="success" :disabled="selected.length===0">
+                        <v-icon left>mdi-cloud-print-outline</v-icon>
+                        批量打印
+                    </v-btn>
+                    <v-btn small @click="downloadMachineJobs">
                         <v-icon left>mdi-download</v-icon>
                         导出
                     </v-btn>
@@ -90,11 +97,14 @@
             </template>
         </v-data-table>
         <v-data-table
+                v-model="selected1"
                 :loading="loading"
                 :headers="headers"
                 :items="items"
                 hide-default-footer
                 :loading-text="loadingText"
+                show-select
+                item-key="jobId"
                 class="elevation-1 px-4 pb-4">
             <template v-slot:top>
                 <v-row align="center" justify="start">
@@ -102,7 +112,11 @@
                         <div class="display-2">未排程列表</div>
                     </v-col>
                     <v-spacer/>
-                    <v-btn @click="downloadAllJobs" :loading="isDownloadAllJobs">
+                    <v-btn @click="printItems1" small color="success" :disabled="selected1.length===0">
+                        <v-icon left>mdi-cloud-print-outline</v-icon>
+                        批量打印
+                    </v-btn>
+                    <v-btn small @click="downloadAllJobs" :loading="isDownloadAllJobs">
                         <v-icon left>mdi-download</v-icon>
                         导出
                     </v-btn>
@@ -146,6 +160,7 @@
     import export_json_to_excel  from '../../lib/Export2Excel'
     import MaterialApi from "../../api/plc/MaterialApi";
     import Label from "../../components/label/Label";
+    import Labels from "../../components/label/Labels";
 
     export default {
         name: "Job",
@@ -157,6 +172,8 @@
         mixins:[TablePageMixins,DictionaryMixins],
         data() {
             return {
+                selected:[],
+                selected1:[],
                 runtimeJobSetStatusMap:{
                     0:'未设置',
                     1:'正在设置',
@@ -365,13 +382,9 @@
             printItem(item){
                 MaterialApi.getMaterial(item.material.materialCode,item.material.aoCode).then(v=>{
                     this.$dialog.show(Label, {
-                        pageSize: {
-                            w:6,
-                            h:4
-                        },
                         labelSize:{
-                            w:6,
-                            h:4
+                            w:10,
+                            h:8
                         },
                         missionId: item.mission.missionId,
                         form: {...v.data},
@@ -379,6 +392,54 @@
                     })
                 })
             },
+            printItems(){
+                if(this.selected.length===0){
+                    this.$message.warning('请先选择')
+                }else{
+                    let labels = this.selected.map(v=>{
+                        return {
+                            missionId:v.jobId,
+                            aoCode:v.material.aoCode,
+                            materialCode:v.material.materialCode,
+                            quantity:v.material.quantity,
+                            position:v.material.position,
+                            t:new Date().getTime()
+                        }
+                    })
+                    this.$dialog.show(Labels, {
+                        labelSize:{
+                            w:10,
+                            h:8
+                        },
+                        labels: labels,
+                        width:600,
+                    })
+                }
+            },
+            printItems1(){
+                if(this.selected1.length===0){
+                    this.$message.warning('请先选择')
+                }else{
+                    let labels = this.selected1.map(v=>{
+                        return {
+                            missionId:v.jobId,
+                            aoCode:v.material.aoCode,
+                            materialCode:v.material.materialCode,
+                            quantity:v.material.quantity,
+                            position:v.material.position,
+                            t:new Date().getTime()
+                        }
+                    })
+                    this.$dialog.show(Labels, {
+                        labelSize:{
+                            w:10,
+                            h:8
+                        },
+                        labels: labels,
+                        width:600,
+                    })
+                }
+            }
         }
     }
 </script>

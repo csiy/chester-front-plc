@@ -1,11 +1,14 @@
 <template>
     <v-container fluid>
         <v-data-table
+                v-model="selected"
                 :loading="loading"
                 :headers="headers"
                 :items="items"
                 hide-default-footer
                 :loading-text="loadingText"
+                show-select
+                item-key="missionId"
                 class="elevation-1 px-4 pb-4">
             <template v-slot:top>
                 <v-row align="center" justify="start">
@@ -47,21 +50,25 @@
                         </v-menu>
                     </v-col>
                     <v-col cols="2">
-                        <v-btn @click="search">
+                        <v-btn @click="search" small>
                             <v-icon left>mdi-magnify</v-icon>
                             搜索
                         </v-btn>
                     </v-col>
                     <v-spacer/>
-                    <v-btn @click="downloadMission">
+                    <v-btn @click="printItems" color="success" small :disabled="selected.length===0">
+                        <v-icon left>mdi-cloud-print-outline</v-icon>
+                        批量打印
+                    </v-btn>
+                    <v-btn @click="downloadMission" small>
                         <v-icon left>mdi-download</v-icon>
                         导出
                     </v-btn>
-                    <v-btn @click="importItem" color="orange darken-2">
+                    <v-btn @click="importItem" color="orange darken-2" small>
                         <v-icon left>mdi-upload</v-icon>
                         导入
                     </v-btn>
-                    <v-btn @click="plusItem" color="orange darken-2">
+                    <v-btn @click="plusItem" color="orange darken-2" small>
                         <v-icon left>mdi-plus</v-icon>
                         添加
                     </v-btn>
@@ -121,6 +128,7 @@
     import Label from "../../components/label/Label";
     import MaterialApi from "../../api/plc/MaterialApi";
     import export_json_to_excel from "../../lib/Export2Excel";
+    import Labels from "../../components/label/Labels";
     export default {
         name: "Mission",
         mounted() {
@@ -131,6 +139,7 @@
             return {
                 missionState:null,
                 dateMenu: false,
+                selected:[],
                 missionStatus: [
                     {
                         value: 1,
@@ -240,16 +249,36 @@
                     export_json_to_excel(tHeader,data,'任务');  //导出文件名称
                 })
             },
+            printItems(){
+                if(this.selected.length===0){
+                    this.$message.warning('请先选择')
+                }else{
+                    let labels = this.selected.map(v=>{
+                       return {
+                           missionId:v.missionId,
+                           aoCode:v.aoCode,
+                           materialCode:v.materialCode,
+                           quantity:v.quantity,
+                           position:v.position,
+                           t:new Date().getTime()
+                       }
+                    })
+                    this.$dialog.show(Labels, {
+                        labelSize:{
+                            w:10,
+                            h:8
+                        },
+                        labels: labels,
+                        width:600,
+                    })
+                }
+            },
             printItem(item){
                 MaterialApi.getMaterial(item.materialCode,item.aoCode).then(v=>{
                     this.$dialog.show(Label, {
-                        pageSize: {
-                            w:6,
-                            h:4
-                        },
                         labelSize:{
-                            w:6,
-                            h:4
+                            w:10,
+                            h:8
                         },
                         missionId: item.missionId,
                         form: {...v.data},

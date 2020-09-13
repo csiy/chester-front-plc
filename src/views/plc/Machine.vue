@@ -13,7 +13,7 @@
                         <v-text-field clearable v-model.trim="query.address" label="地址" hide-details/>
                     </v-col>
                     <v-col cols="2">
-                        <v-btn @click="search">
+                        <v-btn @click="search" small>
                             <v-icon left>mdi-magnify</v-icon>
                             搜索
                         </v-btn>

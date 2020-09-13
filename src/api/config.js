@@ -2,7 +2,7 @@ import axios from 'axios';
 import Vue from 'vue'
 
 const Axios = axios.create({
-    baseURL: `http://${location.hostname}:8888`,
+    baseURL: `http://39.99.199.83:8888`,
     timeout: 10000
 });
 

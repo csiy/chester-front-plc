@@ -20,13 +20,13 @@
                                   label="请选择角色" hide-details/>
                     </v-col>
                     <v-col cols="2">
-                        <v-btn @click="search">
+                        <v-btn small @click="search">
                             <v-icon left>mdi-magnify</v-icon>
                             搜索
                         </v-btn>
                     </v-col>
                     <v-spacer/>
-                    <v-btn @click="plusItem" color="orange darken-2">
+                    <v-btn small @click="plusItem" color="orange darken-2">
                         <v-icon left>mdi-account-plus-outline</v-icon>
                         添加
                     </v-btn>
