@@ -5,8 +5,9 @@
                 :loading="loading"
                 :headers="headers"
                 :items="items"
-                hide-default-footer
                 :loading-text="loadingText"
+                :server-items-length="page.total"
+                :options.sync="options"
                 show-select
                 item-key="materialId"
                 class="elevation-1 px-4 pb-4">
@@ -25,6 +26,10 @@
                         </v-btn>
                     </v-col>
                     <v-spacer/>
+                    <v-btn @click="bathDelete" color="red" small :disabled="selected.length===0">
+                        <v-icon left>mdi-delete-forever-outline</v-icon>
+                        批量删除
+                    </v-btn>
                     <v-btn @click="bathMission" color="success" small :disabled="selected.length===0">
                         <v-icon left>mdi-shuffle-variant</v-icon>
                         生成任务
@@ -70,11 +75,11 @@
             <template v-slot:no-data>
                 未查询到数据
             </template>
-            <template v-slot:footer v-if="pageCount">
-                <v-divider/>
-                <v-pagination class="mt-2" v-model="page.curPage" @input="search" :length="pageCount"
-                              :total-visible="totalVisible"/>
-            </template>
+<!--            <template v-slot:footer v-if="pageCount">-->
+<!--                <v-divider/>-->
+<!--                <v-pagination class="mt-2" v-model="page.curPage" @input="search" :length="pageCount"-->
+<!--                              :total-visible="totalVisible"/>-->
+<!--            </template>-->
         </v-data-table>
     </v-container>
 </template>
@@ -97,6 +102,7 @@
         mixins:[TablePageMixins,DictionaryMixins],
         data() {
             return {
+                options:{},
                 selected:[],
                 headers: [
                     {text: '物料号', sortable: false, value: 'materialCode',width:150},
@@ -124,6 +130,16 @@
                 }
             }
         },
+        watch: {
+            options:{
+                handler () {
+                    this.page.curPage = this.options.page
+                    this.page.pageSize = this.options.itemsPerPage === -1?this.page.total:this.options.itemsPerPage
+                    this.search()
+                },
+                deep: true,
+            }
+        },
         methods: {
             formatJson(filterVal,jsonData){
                 return jsonData.map(v => filterVal.map(j=> v[j]))
@@ -136,6 +152,24 @@
                 }).then((v) => {
                     this.search();
                 })
+            },
+            async bathDelete() {
+                if (this.actions.remove) {
+                    let res = await this.$dialog.confirm({
+                        text: `确认要删除吗？删除后将无法恢复！`,
+                        title: '删除'
+                    })
+                    if (res) {
+                        let items = this.selected;
+                        this.selected = [];
+                        items.forEach(item=>{
+                            this.actions.remove(item.materialId,item.version).then(() => {
+                                this.search();
+                            });
+                        })
+
+                    }
+                }
             },
             downloadMaterials(){
                 MaterialApi.materialPages(this.query,{

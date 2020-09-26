@@ -4,7 +4,7 @@
             <div>图片尺寸:{{labelSize.w}}cm*{{labelSize.h}}cm</div>
         </div>
         <div class="label_style" :style="imageStyle" :id="'id'+item.missionId" v-for="item in items">
-            <div class="label-left">
+            <div class="label_top">
                 <div class="label-item">
                     <div class="title">AO工序号</div>
                     <div class="val">{{item.aoCode}}</div>
@@ -13,17 +13,25 @@
                     <div class="title">物料号</div>
                     <div class="val">{{item.materialCode}}</div>
                 </div>
-                <div class="label-item">
-                    <div class="title">定额数量</div>
-                    <div class="val">{{item.quantity}}</div>
-                </div>
-                <div class="label-item">
-                    <div class="title">生产站位</div>
-                    <div class="val">{{item.position}}</div>
-                </div>
             </div>
-            <div class="label-right">
-                <div :id="'qrCodeDiv_'+item.missionId+item.t"></div>
+            <div class="label_bottom">
+                <div class="label-left">
+                    <div class="label-item">
+                        <div class="title">定额数量</div>
+                        <div class="val">{{item.quantity}}</div>
+                    </div>
+                    <div class="label-item">
+                        <div class="title">生产站位</div>
+                        <div class="val">{{item.position}}</div>
+                    </div>
+                    <div class="label-item">
+                        <div class="title">批次号</div>
+                        <div class="val">{{item.missionId}}</div>
+                    </div>
+                </div>
+                <div class="label-right">
+                    <div :id="'qrCodeDiv_'+item.missionId+item.t"></div>
+                </div>
             </div>
         </div>
         <div style="margin-top: 20px;display: flex;justify-content: center;align-items: center">
@@ -83,9 +91,11 @@
                     console.log('打印 id ：'+id)
                     let canvas = await html2canvas(document.getElementById(id))
                     let imgData = canvas.toDataURL('image/png');
-                    doc.addImage(imgData, 'png', 0, 0, this.labelSize.w, this.labelSize.h, id)
-                    if(i+1 < this.items.length){
-                        doc.addPage([this.labelSize.w, this.labelSize.h],'l')
+                    for (let j = 0;j<item.count;j++){
+                        if(!(i===0&&j===0)){
+                            doc.addPage([this.labelSize.w, this.labelSize.h],'l')
+                        }
+                        doc.addImage(imgData, 'png', 0, 0, this.labelSize.w, this.labelSize.h, id)
                     }
                 }
                 doc.save();
@@ -99,43 +109,60 @@
     .label_style{
         font-weight: bold;
         display: flex;
+        flex-direction: column;
         color: #000000;
         border: 1px solid #000000;
         margin-bottom: 5px;
-        .label-left{
-            flex: 1;
-            height: 100%;
-            .label-item{
+        .label-item{
+            display: flex;
+            .title{
+                border: 1px solid #000000;
+                width: 80px;
                 display: flex;
-                height: 25%;
-                .title{
-                    border: 1px solid #000000;
-                    flex: 1;
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    padding: 2px;
-                    font-size:14px
-                }
-                .val{
-                    border: 1px solid #000000;
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    flex: 1;
-                    padding: 2px;
-                    overflow: hidden;
-                    font-size:14px
-                }
+                justify-content: flex-start;
+                align-items: center;
+                padding: 2px;
+                font-size:16px;
+                font-weight: bold;
+            }
+            .val{
+                border: 1px solid #000000;
+                display: flex;
+                flex: auto;
+                justify-content: flex-start;
+                align-items: center;
+                padding: 2px;
+                overflow: hidden;
+                font-size:16px;
+                font-weight: bold;
             }
         }
-        .label-right{
-            flex: 1;
-            height: 100%;
-            border: 1px solid #000000;
+        .label_top{
+            flex-direction: column;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            height: 40%;
+            .label-item{
+                height: 50%;
+            }
+        }
+        .label_bottom{
+            display: flex;
+            height: 60%;
+            .label-item{
+                height: 33.3%;
+            }
+            .label-left{
+                flex-direction: column;
+                display: flex;
+                flex: 1;
+            }
+            .label-right{
+                border: 1px solid #000000;
+                display: flex;
+                flex: 1;
+                justify-content: center;
+                align-items: center;
+            }
         }
     }
 </style>

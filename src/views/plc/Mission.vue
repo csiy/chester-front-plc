@@ -56,6 +56,10 @@
                         </v-btn>
                     </v-col>
                     <v-spacer/>
+                    <v-btn @click="bathDelete" color="red" small :disabled="selected.length===0">
+                        <v-icon left>mdi-delete-forever-outline</v-icon>
+                        批量删除
+                    </v-btn>
                     <v-btn @click="printItems" color="success" small :disabled="selected.length===0">
                         <v-icon left>mdi-cloud-print-outline</v-icon>
                         批量打印
@@ -249,6 +253,24 @@
                     export_json_to_excel(tHeader,data,'任务');  //导出文件名称
                 })
             },
+            async bathDelete() {
+                if (this.actions.remove) {
+                    let res = await this.$dialog.confirm({
+                        text: `确认要删除吗？删除后将无法恢复！`,
+                        title: '删除'
+                    })
+                    if (res) {
+                        let items = this.selected;
+                        this.selected = [];
+                        items.forEach(item=>{
+                            this.actions.remove(item.missionId,item.version).then(() => {
+                                this.search();
+                            });
+                        })
+
+                    }
+                }
+            },
             printItems(){
                 if(this.selected.length===0){
                     this.$message.warning('请先选择')
@@ -257,6 +279,7 @@
                        return {
                            missionId:v.missionId,
                            aoCode:v.aoCode,
+                           count:v.count,
                            materialCode:v.materialCode,
                            quantity:v.quantity,
                            position:v.position,

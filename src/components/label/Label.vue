@@ -4,7 +4,7 @@
             <div>图片尺寸:{{labelSize.w}}cm*{{labelSize.h}}cm</div>
         </div>
         <div class="label_style" :style="imageStyle" id="label">
-            <div class="label-left">
+            <div class="label_top">
                 <div class="label-item">
                     <div class="title">AO工序号</div>
                     <div class="val">{{form.aoCode}}</div>
@@ -13,17 +13,25 @@
                     <div class="title">物料号</div>
                     <div class="val">{{form.materialCode}}</div>
                 </div>
-                <div class="label-item">
-                    <div class="title">定额数量</div>
-                    <div class="val">{{form.quantity}}</div>
-                </div>
-                <div class="label-item">
-                    <div class="title">生产站位</div>
-                    <div class="val">{{form.position}}</div>
-                </div>
             </div>
-            <div class="label-right">
-                <div ref="qrCodeDiv"></div>
+            <div class="label_bottom">
+                <div class="label-left">
+                    <div class="label-item">
+                        <div class="title">定额数量</div>
+                        <div class="val">{{form.quantity}}</div>
+                    </div>
+                    <div class="label-item">
+                        <div class="title">生产站位</div>
+                        <div class="val">{{form.position}}</div>
+                    </div>
+                    <div class="label-item">
+                        <div class="title">批次号</div>
+                        <div class="val">{{missionId}}</div>
+                    </div>
+                </div>
+                <div class="label-right">
+                    <div ref="qrCodeDiv"></div>
+                </div>
             </div>
         </div>
         <div style="margin-top: 20px;display: flex;justify-content: center;align-items: center">
@@ -35,7 +43,6 @@
 <script>
     import html2canvas from 'html2canvas';
     import print from 'print-js'
-    import { jsPDF } from "jspdf";
     import QRCode from 'qrcodejs2'
     export default {
         name: "Label",
@@ -62,29 +69,8 @@
         methods: {
             print(){
                 html2canvas(document.querySelector("#label")).then(canvas => {
-                    let ctx = canvas.getContext("2d");
                     let imgData = canvas.toDataURL('image/png');
-                    let img = new Image();
-                    let contentWidth = canvas.width;
-                    let contentHeight = canvas.height;
-                    img.src = imgData;
-                    img.width = contentWidth;
-                    img.height = contentHeight;
-                    img.onload = ()=>{
-                        const doc = new jsPDF('l', 'cm', [this.labelSize.w, this.labelSize.h])
-                        doc.addImage(imgData, 'png', 0, 0, this.labelSize.w, this.labelSize.h, 'NONE')
-                            .addPage([this.labelSize.w, this.labelSize.h],'l')
-                            .addImage(imgData, 'png', 0, 0, this.labelSize.w, this.labelSize.h, 'NONE')
-                            .addPage([this.labelSize.w, this.labelSize.h],'l')
-                            .addImage(imgData, 'png', 0, 0, this.labelSize.w, this.labelSize.h, 'NONE')
-                            .addPage([this.labelSize.w, this.labelSize.h],'l')
-                            .addImage(imgData, 'png', 0, 0, this.labelSize.w, this.labelSize.h, 'NONE')
-                            .addPage([this.labelSize.w, this.labelSize.h],'l')
-                            .addImage(imgData, 'png', 0, 0, this.labelSize.w, this.labelSize.h, 'NONE')
-                         //比例可根据需要调节
-                        //print(doc,"pdf")
-                        doc.save('pdf_' + new Date().getTime() + '.pdf');
-                    }
+                    print(imgData, 'image');
                 });
             }
         }
@@ -95,42 +81,59 @@
     .label_style{
         font-weight: bold;
         display: flex;
+        flex-direction: column;
         color: #000000;
         border: 1px solid #000000;
-        .label-left{
-            flex: 1;
-            height: 100%;
-            .label-item{
+        .label-item{
+            display: flex;
+            .title{
+                border: 1px solid #000000;
+                width: 80px;
                 display: flex;
-                height: 25%;
-                .title{
-                    border: 1px solid #000000;
-                    flex: 1;
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    padding: 2px;
-                    font-size:14px
-                }
-                .val{
-                    border: 1px solid #000000;
-                    display: flex;
-                    justify-content: flex-start;
-                    align-items: center;
-                    flex: 1;
-                    padding: 2px;
-                    overflow: hidden;
-                    font-size:14px
-                }
+                justify-content: flex-start;
+                align-items: center;
+                padding: 2px;
+                font-size:16px;
+                font-weight: bold;
+            }
+            .val{
+                border: 1px solid #000000;
+                display: flex;
+                flex: auto;
+                justify-content: flex-start;
+                align-items: center;
+                padding: 2px;
+                overflow: hidden;
+                font-size:16px;
+                font-weight: bold;
             }
         }
-        .label-right{
-            flex: 1;
-            height: 100%;
-            border: 1px solid #000000;
+        .label_top{
+            flex-direction: column;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            height: 40%;
+            .label-item{
+                height: 50%;
+            }
+        }
+        .label_bottom{
+            display: flex;
+            height: 60%;
+            .label-item{
+                height: 33.3%;
+            }
+            .label-left{
+                flex-direction: column;
+                display: flex;
+                flex: 1;
+            }
+            .label-right{
+                border: 1px solid #000000;
+                display: flex;
+                flex: 1;
+                justify-content: center;
+                align-items: center;
+            }
         }
     }
 </style>

@@ -400,6 +400,7 @@
                         return {
                             missionId:v.jobId,
                             aoCode:v.material.aoCode,
+                            count:v.mission.count,
                             materialCode:v.material.materialCode,
                             quantity:v.material.quantity,
                             position:v.material.position,
@@ -424,6 +425,7 @@
                         return {
                             missionId:v.jobId,
                             aoCode:v.material.aoCode,
+                            count:v.mission.count,
                             materialCode:v.material.materialCode,
                             quantity:v.material.quantity,
                             position:v.material.position,
