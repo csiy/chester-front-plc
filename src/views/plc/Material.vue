@@ -142,10 +142,9 @@
             bathMission(){
                 this.$dialog.show(DialogBatchMission, {
                     waitForResult: true,//等待弹出框返回值
-                    width:1200,
+                    width:800,
                     items: this.selected
                 }).then((v) => {
-                    this.search();
                 })
             },
             async bathDelete() {

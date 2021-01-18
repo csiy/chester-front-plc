@@ -4,8 +4,9 @@
                 :loading="loading"
                 :headers="headers"
                 :items="items"
-                hide-default-footer
                 :loading-text="loadingText"
+                :server-items-length="page.total"
+                :options.sync="options"
                 class="elevation-1 px-4 pb-4">
             <template v-slot:top>
                 <v-row align="center" justify="start">
@@ -49,11 +50,6 @@
             </template>
             <template v-slot:no-data>
                 未查询到数据
-            </template>
-            <template v-slot:footer v-if="pageCount">
-                <v-divider/>
-                <v-pagination class="mt-2" v-model="page.curPage" @input="search" :length="pageCount"
-                              :total-visible="totalVisible"/>
             </template>
         </v-data-table>
     </v-container>

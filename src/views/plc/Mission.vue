@@ -5,8 +5,9 @@
                 :loading="loading"
                 :headers="headers"
                 :items="items"
-                hide-default-footer
                 :loading-text="loadingText"
+                :server-items-length="page.total"
+                :options.sync="options"
                 show-select
                 item-key="missionId"
                 class="elevation-1 px-4 pb-4">
@@ -105,7 +106,7 @@
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                         <v-btn v-on="on" icon color="blue-grey lighten-1"
-                               @click="deleteItem(item.missionId,item.version)">
+                               @click="deleteItem(item.missionId)">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                     </template>
@@ -114,11 +115,6 @@
             </template>
             <template v-slot:no-data>
                 未查询到数据
-            </template>
-            <template v-slot:footer v-if="pageCount">
-                <v-divider/>
-                <v-pagination class="mt-2" v-model="page.curPage" @input="search" :length="pageCount"
-                              :total-visible="totalVisible"/>
             </template>
         </v-data-table>
     </v-container>
@@ -171,10 +167,10 @@
                     {text: 'AO工序号', sortable: false, value: 'aoCode'},
                     {text: '包装数量', sortable: false, value: 'count'},
                     {text: '定额数量', sortable: false, value: 'quantity'},
-                    {text: '状态', sortable: false, value: 'status'},
+                    {text: '状态', sortable: false, value: 'status',width:80},
                     {text: '操作时间', sortable: false, value: 'updatedOn'},
                     {text: '操作人', sortable: false, value: 'updatedName'},
-                    {text: '操作', sortable: false, value: 'action'},
+                    {text: '操作', sortable: false, value: 'action',width:170},
                 ],
                 query: {
                     materialCode: null,

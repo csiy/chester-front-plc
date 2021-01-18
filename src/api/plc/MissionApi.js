@@ -3,8 +3,8 @@ import Axios from "../config";
 let missionPages = (query, page) => {
     return Axios.get('/plc/missions', {params: {...query, ...page}});
 }
-let missionDelete = (missionId,version) => {
-    return Axios.delete(`/plc/missions/${missionId}/${version}`);
+let missionDelete = (missionId) => {
+    return Axios.delete(`/plc/missions/${missionId}`);
 }
 let missionPlus = (mission) => {
     return Axios.post(`/plc/missions`,mission);

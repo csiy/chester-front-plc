@@ -3,6 +3,7 @@ export default {
         return {
             loading: false,
             loadingText: '正在请求数据',
+            options:{},
             items: [],
             page: {
                 curPage: 1,
@@ -27,12 +28,22 @@ export default {
             return parseInt(this.page.total / this.page.pageSize) + ((this.page.total % this.page.pageSize) > 0 ? 1 : 0)
         }
     },
+    watch: {
+        options:{
+            handler () {
+                this.page.curPage = this.options.page
+                this.page.pageSize = this.options.itemsPerPage === -1?this.page.total:this.options.itemsPerPage
+                this.search()
+            },
+            deep: true,
+        }
+    },
     methods: {
         importItem(){
             if(this.dialog.import){
                 this.$dialog.show(this.dialog.import, {
                     waitForResult: true,//等待弹出框返回值
-                    width:1200,
+                    width:800,
                 }).then((v) => {
                     this.search();
                 })
@@ -42,7 +53,7 @@ export default {
             if(this.dialog.plus){
                 this.$dialog.show(this.dialog.plus, {
                     waitForResult: true,//等待弹出框返回值
-                    width:600,
+                    width:800,
                 }).then((v) => {
                     if (v) {
                         this.search();
@@ -55,7 +66,7 @@ export default {
                 this.$dialog.show(this.dialog.update, {
                     item: item,
                     waitForResult: true,//等待弹出框返回值
-                    width:600,
+                    width:800,
                 }).then((v) => {
                     if (v) {
                         this.search();
@@ -63,14 +74,14 @@ export default {
                 })
             }
         },
-        async deleteItem(id,version) {
+        async deleteItem(id) {
             if(this.actions.remove){
                 let res = await this.$dialog.confirm({
                     text: `确认要删除吗？删除后将无法恢复！`,
                     title: '删除'
                 })
                 if (res) {
-                    this.actions.remove(id,version).then(() => {
+                    this.actions.remove(id).then(() => {
                         this.search();
                     });
                 }

@@ -5,7 +5,7 @@
                          :expand-on-hover="drawer"
                          app
                          :mini-variant-width="80"
-                         width="260"
+                         width="230"
                          src="../../assets/images/background.jpg"
                          mobile-break-point="960">
 
