@@ -1,6 +1,5 @@
 <template>
     <v-app>
-        <AppBar v-if="login"/>
         <NavigationDrawer v-if="login"/>
         <v-content v-if="!isLoading">
             <v-fade-transition mode="out-in">

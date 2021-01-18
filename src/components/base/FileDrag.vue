@@ -29,7 +29,9 @@
             },
             fileChange(file){
                 const fileReader = new FileReader();
+                console.log(file)
                 fileReader.onload = (ev) => {
+                    console.log(ev)
                     try {
                         let data = ev.target.result;
                         const workbook = XLSX.read(btoa(this.fixData(data)), {type: 'base64'})

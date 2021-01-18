@@ -12,6 +12,8 @@ import VuetifyDialog from 'vuetify-dialog'
 import 'vuetify-dialog/dist/vuetify-dialog.css'
 import { Upload } from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
+import './assets/icon.css'
+
 Vue.component(Upload.name, Upload);
 
 Vue.use(VuetifyDialog, {

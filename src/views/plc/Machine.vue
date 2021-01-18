@@ -20,13 +20,8 @@
                     </v-col>
                 </v-row>
             </template>
-            <template v-slot:item.disk="{ item }">
-                <v-edit-dialog large :return-value.sync="item.disk" @save="saveRuntimeDishNumber(item)">
-                    {{item.disk?item.disk:'暂未设置'}}
-                    <template v-slot:input>
-                        <v-select counter v-model="item.disk" :items="item.diskList" label="请选择盘号" required/>
-                    </template>
-                </v-edit-dialog>
+            <template v-slot:item.disks="{ item }">
+                {{item.disk?item.disk.map(v=>v.name).join(','):'暂未设置'}}
             </template>
             <template v-slot:item.linkState="{ item }">
                 {{item.linkState?'已链接':'未链接'}}
@@ -41,7 +36,7 @@
                             <v-icon>mdi-cog-outline</v-icon>
                         </v-btn>
                     </template>
-                    <span>修改</span>
+                    <span>设置</span>
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
@@ -79,14 +74,13 @@
         data() {
             return {
                 headers: [
-                    {text: '机器Id', sortable: false, value: 'machineId',width:150},
-                    {text: '位置', sortable: false, value: 'address',width:300},
-                    {text: '当前盘号', sortable: false, value: 'disk',width:120},
-                    {text: '机器盘', sortable: false, value: 'diskList',width:300},
-                    {text: '链接状态', sortable: false, value: 'linkState',width:100},
-                    {text: '操作时间', sortable: false, value: 'updatedOn',width:150},
-                    {text: '操作人', sortable: false, value: 'updatedName',width:100},
-                    {text: '操作', sortable: false, value: 'action',width:150},
+                    {text: '机器Id', sortable: false, value: 'machineId'},
+                    {text: '位置', sortable: false, value: 'address'},
+                    {text: '机器盘', sortable: false, value: 'disks'},
+                    {text: '链接状态', sortable: false, value: 'linkState'},
+                    {text: '操作时间', sortable: false, value: 'updatedOn'},
+                    {text: '操作人', sortable: false, value: 'updatedName'},
+                    {text: '操作', sortable: false, value: 'action'},
                 ],
                 query: {
                     address: null

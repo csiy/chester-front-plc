@@ -63,8 +63,11 @@
                                         </v-date-picker>
                                     </v-menu>
                                 </v-flex>
-                                <v-flex xs12 text-xs-right>
+                                <v-flex xs6 text-xs-right>
                                     <v-btn class="mx-0 font-weight-light" :loading="loading" color="light-green darken-1" @click="changeUserInfo">修改资料</v-btn>
+                                </v-flex>
+                                <v-flex xs6 style="justify-content: flex-end;display: flex">
+                                    <v-btn class="mx-0 font-weight-light" color="red darken-4" @click="logout">退出</v-btn>
                                 </v-flex>
                             </v-layout>
                         </v-container>
@@ -129,7 +132,14 @@
             }
         },
         methods: {
-            ...mapMutations('user', ['setUserInfo']),
+            ...mapMutations('user', ['setUserInfo','clearUser']),
+            ...mapMutations('app', ['setLogin']),
+            logout(){
+                this.clearUser();
+                this.setLogin(false);
+                localStorage.clear();
+                this.$router.push('/').catch(err => err);
+            },
             imageChange(file){
                 let reader = new FileReader();
                 let pos = file.target.files[0].name.lastIndexOf(".");

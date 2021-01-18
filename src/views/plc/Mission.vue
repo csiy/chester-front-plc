@@ -19,7 +19,8 @@
                         <v-text-field clearable v-model.trim="query.aoCode" label="请输入AO工序号" hide-details/>
                     </v-col>
                     <v-col cols="1.5">
-                        <v-select clearable v-model.trim="missionState" :items="missionStatus" item-text="name" item-value="value" label="请选择状态" hide-details/>
+                        <v-select clearable v-model.trim="query.status" :items="missionStatus" item-text="name"
+                                  item-value="value" label="请选择状态" hide-details/>
                     </v-col>
                     <v-col cols="1.5">
                         <v-menu
@@ -29,8 +30,7 @@
                                 :return-value.sync="query.date"
                                 transition="scale-transition"
                                 offset-y
-                                min-width="290px"
-                        >
+                                min-width="290px">
                             <template v-slot:activator="{ on }">
                                 <v-text-field
                                         hide-details
@@ -49,12 +49,13 @@
                             </v-date-picker>
                         </v-menu>
                     </v-col>
-                    <v-col cols="2">
-                        <v-btn @click="search" small>
-                            <v-icon left>mdi-magnify</v-icon>
-                            搜索
-                        </v-btn>
-                    </v-col>
+                    <v-spacer/>
+                    <v-btn @click="search" small>
+                        <v-icon left>mdi-magnify</v-icon>
+                        搜索
+                    </v-btn>
+                </v-row>
+                <v-row>
                     <v-spacer/>
                     <v-btn @click="bathDelete" color="red" small :disabled="selected.length===0">
                         <v-icon left>mdi-delete-forever-outline</v-icon>
@@ -81,13 +82,13 @@
             <template v-slot:item.updatedOn="{ item }">
                 {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
             </template>
-            <template v-slot:item.states="{ item }">
-                {{states(item)}}
+            <template v-slot:item.status="{ item }">
+                {{statusType[item.status]}}
             </template>
             <template v-slot:item.action="{ item }">
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="printItem(item)">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="printItem(item)">
                             <v-icon>mdi-cloud-print-outline</v-icon>
                         </v-btn>
                     </template>
@@ -95,7 +96,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-if="item.transform!==2" v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" class="mr-2" @click="updateItem(item)">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="updateItem(item)">
                             <v-icon>mdi-cog-outline</v-icon>
                         </v-btn>
                     </template>
@@ -103,7 +104,8 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.missionId,item.version)">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1"
+                               @click="deleteItem(item.missionId,item.version)">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                     </template>
@@ -133,124 +135,94 @@
     import MaterialApi from "../../api/plc/MaterialApi";
     import export_json_to_excel from "../../lib/Export2Excel";
     import Labels from "../../components/label/Labels";
+
     export default {
         name: "Mission",
         mounted() {
             this.search();
         },
-        mixins:[TablePageMixins,DictionaryMixins],
+        mixins: [TablePageMixins, DictionaryMixins],
         data() {
             return {
-                missionState:null,
                 dateMenu: false,
-                selected:[],
+                selected: [],
                 missionStatus: [
                     {
+                        value: 0,
+                        name: '未执行'
+                    },
+                    {
                         value: 1,
-                        name: '未转换'
-                    },
-                    {
-                        value: 2,
-                        name: '转换成功'
-                    },
-                    {
-                        value: 3,
                         name: '进行中'
                     },
                     {
-                        value: 4,
+                        value: 2,
                         name: '任务完成'
                     },
                     {
-                        value: 5,
+                        value: 3,
                         name: '任务异常终止'
-                    },
-                    {
-                        value: 6,
-                        name: '已经删除'
                     }
                 ],
                 headers: [
                     {text: '单号', sortable: false, value: 'missionId'},
                     {text: '行号', sortable: false, value: 'lineNumber'},
-                    {text: '物料号', sortable: false, value: 'materialCode',},
-                    {text: 'AO工序号', sortable: false, value: 'aoCode',},
-                    {text: '包装数量', sortable: false, value: 'count',},
-                    {text: '定额数量', sortable: false, value: 'quantity',},
-                    {text: '状态', sortable: false, value: 'states',},
-                    {text: '操作时间', sortable: false, value: 'updatedOn',},
-                    {text: '操作人', sortable: false, value: 'updatedName',},
-                    {text: '操作', sortable: false, value: 'action',},
+                    {text: '物料号', sortable: false, value: 'materialCode'},
+                    {text: 'AO工序号', sortable: false, value: 'aoCode'},
+                    {text: '包装数量', sortable: false, value: 'count'},
+                    {text: '定额数量', sortable: false, value: 'quantity'},
+                    {text: '状态', sortable: false, value: 'status'},
+                    {text: '操作时间', sortable: false, value: 'updatedOn'},
+                    {text: '操作人', sortable: false, value: 'updatedName'},
+                    {text: '操作', sortable: false, value: 'action'},
                 ],
                 query: {
                     materialCode: null,
                     aoCode: null,
-                    transform: null,
-                    jobStatus: null,
+                    status: null,
+                    date: null
                 },
-                transformType:{
-                    1:'未转换',
-                    2:'转换成功',
-                    3:'转换时找不到物料 '
-                },
-                jobStateType:{
+                statusType: {
                     0: '未执行',
                     1: '进行中',
                     2: '任务完成',
-                    3: '任务异常终止',
-                    4: '已删除'
+                    3: '任务异常终止'
                 },
                 dialog: {
                     plus: DialogPlusMission,
                     update: DialogUpdateMission,
                     import: DialogImportMission
                 },
-                actions:{
+                actions: {
                     remove: MissionApi.missionDelete,
                     search: MissionApi.missionPages
                 }
             }
         },
-        watch:{
-            missionState(){
-                if(this.missionState){
-                    if(this.missionState<3){
-                        this.query.transform = this.missionState
-                        this.query.jobStatus = null
-                    }else{
-                        this.query.transform = null
-                        this.query.jobStatus = this.missionState - 2
-                    }
-                }else{
-                    this.query.jobStatus = null
-                    this.query.transform = null
-                }
-            }
-        },
         methods: {
-            formatJson(filterVal,jsonData){
-                return jsonData.map(v => filterVal.map(j=> v[j]))
+            formatJson(filterVal, jsonData) {
+                return jsonData.map(v => filterVal.map(j => v[j]))
             },
-            downloadMission(){
-                MissionApi.missionPages(this.query,{
+            downloadMission() {
+                MissionApi.missionPages(this.query, {
                     curPage: 1,
                     pageSize: this.page.total
-                }).then(v=>{
-                    const tHeader = ['单号','行号','物料号','AO工序号','包装数量','定额数量','状态']
-                    const filterVal = ['missionId','lineNumber','materialCode','aoCode','count','quantity','states']
-                    const list = v.data.items.map(v=>{
+                }).then(v => {
+                    const tHeader = ['单号', '行号', '物料号', 'AO工序号', '包装数量', '定额数量', '状态']
+                    const filterVal = ['missionId', 'lineNumber', 'materialCode', 'aoCode', 'count', 'quantity', 'status']
+                    const list = v.data.items.map(v => {
                         return {
-                            'missionId':v.missionId,
-                            'lineNumber':v.lineNumber,
-                            'materialCode':v.materialCode,
-                            'aoCode':v.aoCode,
-                            'count':v.count,
-                            'quantity':v.quantity,
-                            'states':this.states(v),
+                            'missionId': v.missionId,
+                            'lineNumber': v.lineNumber,
+                            'materialCode': v.materialCode,
+                            'aoCode': v.aoCode,
+                            'count': v.count,
+                            'quantity': v.quantity,
+                            'status': this.status[v.status],
                         }
                     })   //table数据
-                    const data = this.formatJson(filterVal,list);
-                    export_json_to_excel(tHeader,data,'任务');  //导出文件名称
+                    const data = this.formatJson(filterVal, list);
+                    export_json_to_excel(tHeader, data, '任务');  //导出文件名称
                 })
             },
             async bathDelete() {
@@ -262,8 +234,8 @@
                     if (res) {
                         let items = this.selected;
                         this.selected = [];
-                        items.forEach(item=>{
-                            this.actions.remove(item.missionId,item.version).then(() => {
+                        items.forEach(item => {
+                            this.actions.remove(item.missionId, item.version).then(() => {
                                 this.search();
                             });
                         })
@@ -271,54 +243,43 @@
                     }
                 }
             },
-            printItems(){
-                if(this.selected.length===0){
+            printItems() {
+                if (this.selected.length === 0) {
                     this.$message.warning('请先选择')
-                }else{
-                    let labels = this.selected.map(v=>{
-                       return {
-                           missionId:v.missionId,
-                           aoCode:v.aoCode,
-                           count:v.count,
-                           materialCode:v.materialCode,
-                           quantity:v.quantity,
-                           position:v.position,
-                           t:new Date().getTime()
-                       }
+                } else {
+                    let labels = this.selected.map(v => {
+                        return {
+                            missionId: v.missionId,
+                            aoCode: v.aoCode,
+                            count: v.count,
+                            materialCode: v.materialCode,
+                            quantity: v.quantity,
+                            position: v.position,
+                            t: new Date().getTime()
+                        }
                     })
                     this.$dialog.show(Labels, {
-                        labelSize:{
-                            w:10,
-                            h:8
+                        labelSize: {
+                            w: 10,
+                            h: 8
                         },
                         labels: labels,
-                        width:600,
+                        width: 600,
                     })
                 }
             },
-            printItem(item){
-                MaterialApi.getMaterial(item.materialCode,item.aoCode).then(v=>{
+            printItem(item) {
+                MaterialApi.getMaterial(item.materialCode, item.aoCode).then(v => {
                     this.$dialog.show(Label, {
-                        labelSize:{
-                            w:10,
-                            h:8
+                        labelSize: {
+                            w: 10,
+                            h: 8
                         },
                         missionId: item.missionId,
                         form: {...v.data},
-                        width:600,
+                        width: 600,
                     })
                 })
-            },
-            states(item){
-                if(item.transform===2){
-                    if(item.jobStatus===0){
-                        return this.transformType[item.transform]
-                    }else{
-                        return this.jobStateType[item.jobStatus]
-                    }
-                }else{
-                    return this.transformType[item.transform]
-                }
             }
         }
     }

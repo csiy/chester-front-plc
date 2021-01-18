@@ -16,8 +16,8 @@ const router = new Router({
         },
         {
             path: '/index',
-            component: () => import('../views/pfm/admin/Index'),
-            name: '首页',
+            component: () => import('../views/user/Info'),
+            name: '个人资料',
         },
         ...sys,
         ...plc,

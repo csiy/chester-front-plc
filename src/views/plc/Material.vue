@@ -75,11 +75,6 @@
             <template v-slot:no-data>
                 未查询到数据
             </template>
-<!--            <template v-slot:footer v-if="pageCount">-->
-<!--                <v-divider/>-->
-<!--                <v-pagination class="mt-2" v-model="page.curPage" @input="search" :length="pageCount"-->
-<!--                              :total-visible="totalVisible"/>-->
-<!--            </template>-->
         </v-data-table>
     </v-container>
 </template>
@@ -105,15 +100,15 @@
                 options:{},
                 selected:[],
                 headers: [
-                    {text: '物料号', sortable: false, value: 'materialCode',width:150},
-                    {text: 'AO工序号', sortable: false, value: 'aoCode',width:150},
-                    {text: '盘号', sortable: false, value: 'disk',width:150},
-                    {text: '定额数量', sortable: false, value: 'quantity',width:150},
-                    {text: '生产站位', sortable: false, value: 'position',width:150},
-                    {text: '存储BIN位', sortable: false, value: 'bin',width:150},
-                    {text: '操作时间', sortable: false, value: 'updatedOn',width:150},
-                    {text: '操作人', sortable: false, value: 'updatedName',width:150},
-                    {text: '操作', sortable: false, value: 'action',width:150},
+                    {text: '物料号', sortable: false, value: 'materialCode'},
+                    {text: 'AO工序号', sortable: false, value: 'aoCode'},
+                    {text: '盘号', sortable: false, value: 'disk'},
+                    {text: '定额数量', sortable: false, value: 'quantity'},
+                    {text: '生产站位', sortable: false, value: 'position'},
+                    {text: '存储BIN位', sortable: false, value: 'bin'},
+                    {text: '操作时间', sortable: false, value: 'updatedOn'},
+                    {text: '操作人', sortable: false, value: 'updatedName'},
+                    {text: '操作', sortable: false, value: 'action'},
                 ],
                 query: {
                     materialCode: null,
