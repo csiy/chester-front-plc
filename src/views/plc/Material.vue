@@ -65,7 +65,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.materialId,item.version)">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.materialId)">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                     </template>

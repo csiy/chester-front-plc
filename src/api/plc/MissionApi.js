@@ -1,5 +1,8 @@
 import Axios from "../config";
 
+let getMission = (missionId)=>{
+    return Axios.get(`/plc/missions/${missionId}`);
+}
 let missionPages = (query, page) => {
     return Axios.get('/plc/missions', {params: {...query, ...page}});
 }
@@ -24,7 +27,18 @@ let verifyMission = (materials) => {
     return Axios.post(`/plc/missions/verify`,{materials});
 }
 
+let schedulerMissionPages = (query, page) => {
+    return Axios.get(`/plc/missions/${query.machineId}/${query.disk}`, {params: {...page}});
+}
+
+let unSchedulerMissionPages = (query, page) => {
+    return Axios.get(`/plc/missions/unScheduler`, {params: {...page}});
+}
+
 export default {
+    getMission,
+    schedulerMissionPages,
+    unSchedulerMissionPages,
     missionPages,
     missionDelete,
     missionPlus,

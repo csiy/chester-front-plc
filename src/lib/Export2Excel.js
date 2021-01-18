@@ -1,7 +1,7 @@
 /* eslint-disable */
 import saveAs from 'file-saver'
-require('script-loader!./Blob');  //引用当前目录下的Blob.js模块
-require('script-loader!xlsx/dist/xlsx.core.min');
+import XLSX from 'xlsx'
+require('./Blob');  //引用当前目录下的Blob.js模块
 //由于这几个文件不支持import引入，所以我们需要`script-loader`来将他们挂载到全局环境下
 function generateArray(table) {
     var out = [];

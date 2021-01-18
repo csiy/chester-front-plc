@@ -81,7 +81,7 @@
                 </v-row>
             </template>
             <template v-slot:item.updatedOn="{ item }">
-                {{item.updatedOn|formatTime('YYYY-MM-DD HH:mm')}}
+                {{item.updatedOn|formatTime('MM-DD')}}
             </template>
             <template v-slot:item.status="{ item }">
                 {{statusType[item.status]}}
@@ -165,11 +165,11 @@
                     {text: '行号', sortable: false, value: 'lineNumber'},
                     {text: '物料号', sortable: false, value: 'materialCode'},
                     {text: 'AO工序号', sortable: false, value: 'aoCode'},
-                    {text: '包装数量', sortable: false, value: 'count'},
-                    {text: '定额数量', sortable: false, value: 'quantity'},
+                    {text: '包装数量', sortable: false, value: 'count',width:60},
+                    {text: '定额数量', sortable: false, value: 'quantity',width:60},
                     {text: '状态', sortable: false, value: 'status',width:80},
-                    {text: '操作时间', sortable: false, value: 'updatedOn'},
-                    {text: '操作人', sortable: false, value: 'updatedName'},
+                    {text: '操作时间', sortable: false, value: 'updatedOn',width:80},
+                    {text: '操作人', sortable: false, value: 'updatedName',width:80},
                     {text: '操作', sortable: false, value: 'action',width:170},
                 ],
                 query: {

@@ -10,11 +10,11 @@
                         <v-col cols="12" sm="12" md="12">
                             <v-text-field clearable v-model.trim="machine.address" :rules="[rules.address]" label="请输入位置" required></v-text-field>
                         </v-col>
-                        <template v-for="(val,index) in machine.diskList">
+                        <template v-for="(disk,index) in machine.disks">
                             <v-col cols="10">
-                                <v-text-field clearable v-model.trim="machine.diskList[index]" :rules="[rules.dish]" label="请输入盘号" required></v-text-field>
+                                <v-text-field clearable v-model.trim="disk.name" :rules="[rules.disk]" label="请输入盘号" required></v-text-field>
                             </v-col>
-                            <v-col cols="1" v-if="index+1===machine.diskList.length&&index+1<numbers.length">
+                            <v-col cols="1" v-if="index+1===machine.disks.length&&index+1<10">
                                 <v-btn color="success darken-1" fab x-small dark @click="plus"><v-icon>mdi-plus</v-icon></v-btn>
                             </v-col>
                             <v-col cols="1" v-else>
@@ -42,17 +42,19 @@
             this.machine.machineId = this.item.machineId;
             this.machine.address = this.item.address;
             this.machine.version = this.item.version;
-            if(this.item.diskList.length>0){
-                this.machine.diskList = [...this.item.diskList]
+            if(this.item.disks.length>0){
+                this.machine.disks = [...this.item.disks]
             }
         },
         data() {
             return {
                 valid: true,
-                numbers: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
                 machine: {
                     address: null,
-                    diskList: [null],
+                    disks: [{
+                        name:null,
+                        missionId: null,
+                    }],
                     params: null,
                 },
                 loading:false,
@@ -64,14 +66,14 @@
         },
         methods: {
             plus(){
-                this.machine.diskList.push(null)
+                this.machine.disks.push({})
             },
             minus(index){
-                this.machine.diskList.splice(index,1)
+                this.machine.disks.splice(index,1)
             },
             submit(){
                 if(this.$refs.form.validate()){
-                    if(this.machine.diskList.filter(v=>v===null).length>0){
+                    if(this.machine.disks.filter(v=>v.name===null).length>0){
                         this.$message.warning("请输入盘号")
                         return
                     }

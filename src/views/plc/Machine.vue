@@ -22,7 +22,7 @@
                 </v-row>
             </template>
             <template v-slot:item.disks="{ item }">
-                {{item.disk?item.disk.map(v=>v.name).join(','):'暂未设置'}}
+                {{item.disks?item.disks.map(v=>v.name).join(','):'暂未设置'}}
             </template>
             <template v-slot:item.linkState="{ item }">
                 {{item.linkState?'已链接':'未链接'}}
@@ -41,7 +41,7 @@
                 </v-tooltip>
                 <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.machineId,item.version)">
+                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.machineId)">
                             <v-icon>mdi-delete-forever-outline</v-icon>
                         </v-btn>
                     </template>
