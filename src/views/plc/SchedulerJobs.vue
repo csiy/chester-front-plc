@@ -122,7 +122,7 @@
                                 'aoCode':v.aoCode,
                                 'count':v.count,
                                 'quantity':v.quantity,
-                                'disk':v.disk,
+                                'disk':v.disk.name,
                                 'position':v.position,
                                 'bin':v.bin,
                             }
