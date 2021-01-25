@@ -20,16 +20,16 @@ let machineAll = () => {
     return Axios.get('/plc/machines/all');
 }
 
-let machineStart = (machineId) => {
-    return Axios.put(`/plc/machines/start/${machineId}`);
+let machineStart = (machineId,discNo) => {
+    return Axios.put(`/plc/machines/start/${machineId}/${discNo}`);
 }
 
-let machineStop = (machineId) => {
-    return Axios.put(`/plc/machines/stop/${machineId}`);
+let machineStop = (machineId,discNo) => {
+    return Axios.put(`/plc/machines/stop/${machineId}/${discNo}`);
 }
 
-let setJob = (machineId,jobId) => {
-    return Axios.put(`/plc/machines/set/${machineId}/${jobId}`);
+let setJob = (machineId,discNo) => {
+    return Axios.put(`/plc/machines/set/${machineId}/${discNo}`);
 }
 
 export default {
