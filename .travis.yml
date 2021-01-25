@@ -11,6 +11,6 @@ cache:
   directories:
     - node_modules
 after_success:
-  - docker build -t chester-web-plc-manager:laster .
+  - docker build -t chenxiaoyue/chester-web-plc-manager:laster .
   - docker login -u chenxiaoyue -p tom36634938@qq
-  - docker push chester-web-plc-manager:laster
+  - docker push chenxiaoyue/chester-web-plc-manager:laster
