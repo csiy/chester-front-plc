@@ -1,6 +1,9 @@
 language: node_js
 node_js:
   - "8"
+branches:
+  only:
+    - master
 services:
   - docker
 install:
@@ -12,5 +15,5 @@ cache:
     - node_modules
 after_success:
   - docker build -t chenxiaoyue/chester-web-plc-manager:laster .
-  - docker login -u chenxiaoyue -p tom36634938@qq
+  - docker login -u $docker_name -p $docker_pwd
   - docker push chenxiaoyue/chester-web-plc-manager:laster
