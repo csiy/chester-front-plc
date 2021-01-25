@@ -20,10 +20,6 @@ after_success:
   - docker build -t chenxiaoyue/chester-web-plc-manager:laster .
   - docker login -u $docker_name -p $docker_pwd
   - docker push chenxiaoyue/chester-web-plc-manager:laster
-  - ssh root@39.99.130.5
-  - cd /root
-  - docker-compose pull web-plc-manager
-  - docker-compose up -d
 before_install:
   - sudo openssl aes-256-cbc -K $encrypted_9b2d7e19d83c_key -iv $encrypted_9b2d7e19d83c_iv -in id_rsa.enc -out /home/travis/.ssh/id_rsa -d
   - sudo chmod 600 /home/travis/.ssh/id_rsa
