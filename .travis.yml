@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "8"
+services:
+  - docker
+install:
+  - npm install
+script:
+  - npm run build
+cache:
+  directories:
+    - node_modules
+after_success:
+  - docker build -t chester-web-plc-manager:laster .

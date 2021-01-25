@@ -4,7 +4,7 @@
             <span class="headline">导入任务</span>
         </v-card-title>
         <v-card-text>
-            <FileDrag v-if="data.length===0" @data="dataChange" link="/download/计划单导入模板.xlsx"/>
+            <FileDrag v-if="data.length===0" @data="dataChange" link="/static/download/计划单导入模板.xlsx"/>
             <v-data-table v-else
                           :headers="headers"
                           :items="data"

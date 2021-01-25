@@ -19,12 +19,10 @@
             </v-slide-group>
             <v-divider/>
             <v-card elevation="0" class="d-flex justify-space-between pa-4">
-                <v-btn icon v-if="machine.runtimeJobSetStatus===2">
-                    <v-icon color="orange" @click="stopMachine" v-if="machine.runState">mdi-stop-circle-outline</v-icon>
-                    <v-icon color="primary" v-else @click="startMachine">mdi-play-circle-outline</v-icon>
-                </v-btn>
-                <v-btn color="orange" text @click="setRuntimeJob()">重新设置</v-btn>
-                <v-btn color="orange" text @click="setRuntimeJob()">下一个任务</v-btn>
+                <v-btn color="orange" @click="stopMachine">结束</v-btn>
+                <v-btn color="orange" @click="startMachine">开始</v-btn>
+                <v-btn color="orange" @click="setRuntimeJob">重新设置</v-btn>
+                <v-btn color="orange" @click="setRuntimeJob">下一个任务</v-btn>
             </v-card>
             <v-divider/>
             <v-card elevation="0" v-if="mission" class="d-flex justify-start flex-wrap pa-4">

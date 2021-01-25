@@ -1,7 +1,6 @@
 <template>
     <v-data-table
             v-model="selected"
-            :loading="loading"
             :headers="headers "
             :items="items"
             :loading-text="loadingText"
@@ -67,6 +66,10 @@
             this.query.disk = this.disk;
             this.actions.search = this.searchAction;
             this.search();
+            this.interval = setInterval(this.search,10000)
+        },
+        destroyed() {
+          clearInterval(this.interval)
         },
         watch: {
             machineId() {
@@ -81,6 +84,7 @@
         mixins: [TablePageMixins, DictionaryMixins],
         data() {
             return {
+                interval: null,
                 selected: [],
                 headers: [
                     {text: '任务Id', sortable: false, value: 'missionId'},
