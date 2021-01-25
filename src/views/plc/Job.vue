@@ -85,7 +85,7 @@
                     this.mission = null;
                 }
             },
-            setRuntimeJob(item){
+            setRuntimeJob(){
                 MachineApi.setJob(this.machine.machineId,this.diskNum).then(v=>{
                     this.getMachineAll();
                 })

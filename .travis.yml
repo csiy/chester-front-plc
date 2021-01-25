@@ -1,4 +1,5 @@
 language: node_js
+sudo: required
 node_js:
   - "8"
 branches:
@@ -19,10 +20,10 @@ after_success:
   - docker build -t chenxiaoyue/chester-web-plc-manager:laster .
   - docker login -u $docker_name -p $docker_pwd
   - docker push chenxiaoyue/chester-web-plc-manager:laster
-  - ssh $machine_name@$machine_ip
+  - ssh root@39.99.130.5
   - cd /root
   - docker-compose pull web-plc-manager
   - docker-compose up -d
 before_install:
-  - openssl aes-256-cbc -K $encrypted_9b2d7e19d83c_key -iv $encrypted_9b2d7e19d83c_iv -in id_rsa.enc -out ~/.ssh/id_rsa -d
-  - chmod 600 ~/.ssh/id_rsa
+  - sudo openssl aes-256-cbc -K $encrypted_9b2d7e19d83c_key -iv $encrypted_9b2d7e19d83c_iv -in id_rsa.enc -out ~/.ssh/id_rsa -d
+  - sudo chmod 600 ~/.ssh/id_rsa
