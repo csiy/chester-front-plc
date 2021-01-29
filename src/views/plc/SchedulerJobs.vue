@@ -63,7 +63,7 @@
         props: ['machineId', 'disk', 'searchAction', 'title'],
         mounted() {
             this.query.machineId = this.machineId;
-            this.query.disk = this.disk;
+            this.query.disk = this.disk.name;
             this.actions.search = this.searchAction;
             this.search();
             this.interval = setInterval(this.search,10000)
@@ -77,7 +77,7 @@
                 this.search();
             },
             disk() {
-                this.query.disk = this.disk;
+                this.query.disk = this.disk.name;
                 this.search();
             }
         },
@@ -122,7 +122,7 @@
                                 'aoCode':v.aoCode,
                                 'count':v.count,
                                 'quantity':v.quantity,
-                                'disk':v.disk,
+                                'disk':v.disk.name,
                                 'position':v.position,
                                 'bin':v.bin,
                             }

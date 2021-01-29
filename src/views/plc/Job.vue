@@ -3,7 +3,7 @@
         <v-card :loading="loadingMachines" class="pb-4">
             <v-slide-group v-model="machineNum" class="pa-4" mandatory show-arrows>
                 <template v-for="machine in machines" v-if="machine.disks&&machine.disks.length>0">
-                    <v-slide-item @click.native="changeMachineOrDisk(machine,disk.name)" v-for="disk in machine.disks" :key="machine.machineId+''+disk.name" v-slot:default="{ active, toggle }">
+                    <v-slide-item @click.native="changeMachineOrDisk(machine,disk)" v-for="disk in machine.disks" :key="machine.machineId+''+disk.name" v-slot:default="{ active, toggle }">
                         <v-card :color="active ? 'primary' : 'grey lighten-3'" :dark="active" class="mr-4 pa-2" height="100" width="150" @click="toggle">
                             <div>设备:{{machine.machineId}}</div>
                             <div>盘号:{{disk.name}}</div>
@@ -19,10 +19,9 @@
             </v-slide-group>
             <v-divider/>
             <v-card elevation="0" class="d-flex justify-space-between pa-4">
-                <v-btn color="orange" @click="stopMachine">结束</v-btn>
-                <v-btn color="orange" @click="startMachine">开始</v-btn>
-                <v-btn color="orange" @click="setRuntimeJob">重新设置</v-btn>
-                <v-btn color="orange" @click="setRuntimeJob">下一个任务</v-btn>
+                <v-btn color="orange" @click="stopMachine" v-if="disk.missionId">结束</v-btn>
+                <v-btn color="orange" @click="startMachine" v-if="disk.missionId">开始</v-btn>
+                <v-btn color="orange" @click="setRuntimeJob">{{disk.missionId?'下一个':'设置'}}任务</v-btn>
             </v-card>
             <v-divider/>
             <v-card elevation="0" v-if="mission" class="d-flex justify-start flex-wrap pa-4">
@@ -65,6 +64,7 @@
                 machineNum: null,
                 machines:[],
                 loadingMachines:false,
+                diskNum:0,
             }
         },
         destroyed(){
@@ -76,16 +76,17 @@
             changeMachineOrDisk(machine,disk){
                 this.machine = machine;
                 this.disk = disk;
-                if(machine.missionId){
-                    MissionApi.getMission(machine.missionId).then(v=>{
+                this.diskNum = this.machine.disks.indexOf(this.disk);
+                if(this.disk.missionId){
+                    MissionApi.getMission(this.disk.missionId).then(v=>{
                         this.mission = v;
                     })
                 }else{
                     this.mission = null;
                 }
             },
-            setRuntimeJob(item){
-                MachineApi.setJob(this.machine.machineId,item.jobId).then(v=>{
+            setRuntimeJob(){
+                MachineApi.setJob(this.machine.machineId,this.diskNum).then(v=>{
                     this.getMachineAll();
                 })
             },
@@ -96,7 +97,7 @@
                         title: '开始'
                     })
                     if(res){
-                        MachineApi.machineStart(this.machine.machineId, this.machine.version).then(v => {
+                        MachineApi.machineStart(this.machine.machineId,this.diskNum).then(v => {
                             this.getMachineAll();
                         })
                     }
@@ -109,7 +110,7 @@
                         title: '结束'
                     })
                     if(res){
-                        MachineApi.machineStop(this.machine.machineId, this.machine.version).then(v => {
+                        MachineApi.machineStop(this.machine.machineId, this.diskNum).then(v => {
                             this.getMachineAll();
                         })
                     }
@@ -126,7 +127,7 @@
                                 this.machineNum = 0;
                                 let machine = this.machines[0];
                                 if(machine.disks.length>0){
-                                    this.changeMachineOrDisk(machine,machine.disks[0].name);
+                                    this.changeMachineOrDisk(machine,machine.disks[0]);
                                 }
                             }
                         }
