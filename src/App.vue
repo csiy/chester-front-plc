@@ -49,19 +49,14 @@
             ...mapMutations('user', ['initUser']),
             ...mapMutations('app', ['setLogin']),
             initAuth() {
-                AuthApi.loginByAuth().then(v => {
-                    UserApi.getUser().then(user => {
-                        this.isLoading = false;
-                        this.initUser(user.data);
-                        this.setLogin(true);
-                        if(this.$route.path==='/'){
-                            this.$router.push(`/index`).catch(err => err);
-                        }
-                    }).catch(v => {
-                        this.isLoading = false;
-                        this.$router.push({path: '/'}).catch(err => err);
-                    });
-                }).catch(v => {
+                UserApi.getUser().then(user => {
+                    this.isLoading = false;
+                    this.initUser(user.data);
+                    this.setLogin(true);
+                    if(this.$route.path==='/'){
+                        this.$router.push(`/index`).catch(err => err);
+                    }
+                }).catch(() => {
                     this.isLoading = false;
                     this.$router.push({path: '/'}).catch(err => err);
                 });
