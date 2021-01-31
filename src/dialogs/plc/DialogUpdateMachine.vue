@@ -8,7 +8,7 @@
                 <v-form ref="form" v-model="valid">
                     <v-row>
                         <v-col cols="12" sm="12" md="12">
-                            <v-text-field clearable v-model.trim="machine.address" :rules="[rules.address]" label="请输入位置" required></v-text-field>
+                            <v-text-field clearable v-model.trim="machine.address" :rules="[rules.address]" label="请输入任务完成回调地址" required></v-text-field>
                         </v-col>
                         <template v-for="(disk,index) in machine.disks">
                             <v-col cols="10">
@@ -59,7 +59,7 @@
                 },
                 loading:false,
                 rules: {
-                    address: (v) => v!=null||'请输入位置',
+                    address: (v) => v!=null||'请输入任务完成回调地址',
                     disk: (v) => v!=null||'请选择盘号',
                 },
             }

@@ -14,6 +14,6 @@ cache:
   directories:
     - node_modules
 after_success:
-  - docker build -t registry.cn-zhangjiakou.aliyuncs.com/chester_csy/chester-web-plc:laster .
+  - docker build -t registry.cn-zhangjiakou.aliyuncs.com/chester_csy/chester-web-plc:latest .
   - docker login --username=18657120293 --password=tom36634938@qq registry.cn-zhangjiakou.aliyuncs.com
-  - docker push registry.cn-zhangjiakou.aliyuncs.com/chester_csy/chester-web-plc:laster
+  - docker push registry.cn-zhangjiakou.aliyuncs.com/chester_csy/chester-web-plc:latest
