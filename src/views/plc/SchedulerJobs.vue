@@ -44,8 +44,8 @@
             </v-tooltip>
             <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                    <v-btn v-on="on" icon color="blue-grey lighten-1" @click="updateItem(item.missionId)">
-                        <v-icon>mdi-delete-forever-outline</v-icon>
+                    <v-btn v-on="on" icon color="blue-grey lighten-1" @click="updateItem(item)">
+                        <v-icon>mdi-screw-machine-flat-top</v-icon>
                     </v-btn>
                 </template>
                 <span>修改</span>

@@ -8,7 +8,7 @@
                 <v-form ref="form" v-model="valid">
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field clearable v-model.trim="mission.disk" :rules="[rules.materialCode]" label="请输入盘号" required></v-text-field>
+                            <v-text-field clearable v-model.trim="mission.disk" :rules="[rules.disk]" label="请输入盘号" required></v-text-field>
                         </v-col>
                     </v-row>
                 </v-form>
