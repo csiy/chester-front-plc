@@ -28,9 +28,6 @@ let machineStop = (machineId,discNo) => {
     return Axios.put(`/plc/machines/stop/${machineId}/${discNo}`);
 }
 
-let setJob = (machineId,discNo) => {
-    return Axios.put(`/plc/machines/set/${machineId}/${discNo}`);
-}
 
 export default {
     machinePages,
@@ -41,5 +38,4 @@ export default {
     machineAll,
     machineStart,
     machineStop,
-    setJob,
 }

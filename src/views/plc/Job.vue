@@ -20,8 +20,7 @@
             <v-divider/>
             <v-card elevation="0" class="d-flex justify-space-between pa-4">
                 <v-btn color="orange" @click="stopMachine" v-if="disk.missionId">结束</v-btn>
-                <v-btn color="orange" @click="startMachine" v-if="disk.missionId">开始</v-btn>
-                <v-btn color="orange" @click="setRuntimeJob">{{disk.missionId?'下一个':'设置'}}任务</v-btn>
+                <v-btn color="orange" @click="startMachine" v-else>开始</v-btn>
             </v-card>
             <v-divider/>
             <v-card elevation="0" v-if="mission" class="d-flex justify-start flex-wrap pa-4">
@@ -84,11 +83,6 @@
                 }else{
                     this.mission = null;
                 }
-            },
-            setRuntimeJob(){
-                MachineApi.setJob(this.machine.machineId,this.diskNum).then(v=>{
-                    this.getMachineAll();
-                })
             },
             async startMachine() {
                 if (this.machine.machineId) {
