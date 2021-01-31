@@ -63,7 +63,9 @@
         props: ['machineId', 'disk', 'searchAction', 'title'],
         mounted() {
             this.query.machineId = this.machineId;
-            this.query.disk = this.disk.name;
+            if(this.disk){
+                this.query.disk = this.disk.name;
+            }
             this.actions.search = this.searchAction;
             this.search();
             this.interval = setInterval(this.search,10000)
