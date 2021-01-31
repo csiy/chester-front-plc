@@ -42,6 +42,14 @@
                 </template>
                 <span>删除</span>
             </v-tooltip>
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                    <v-btn v-on="on" icon color="blue-grey lighten-1" @click="updateItem(item.missionId)">
+                        <v-icon>mdi-delete-forever-outline</v-icon>
+                    </v-btn>
+                </template>
+                <span>修改</span>
+            </v-tooltip>
         </template>
         <template v-slot:no-data>
             未查询到数据
@@ -57,6 +65,7 @@
     import MaterialApi from "../../api/plc/MaterialApi";
     import Label from "../../components/label/Label";
     import export_json_to_excel from "../../lib/Export2Excel";
+    import DialogUpdateMissionDisk from "../../dialogs/plc/DialogUpdateMissionDisk";
 
     export default {
         name: "SchedulerJobs",
@@ -99,8 +108,11 @@
                     {text: '存储BIN位', sortable: false, value: 'bin'},
                     {text: '操作', sortable: false, value: 'action'},
                 ],
+                dialog: {
+                    update: DialogUpdateMissionDisk,
+                },
                 actions: {
-                    remove: MissionApi.missionDelete
+                    remove: MissionApi.missionDelete,
                 }
             }
         },

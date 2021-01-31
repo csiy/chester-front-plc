@@ -19,6 +19,10 @@ let missionUpdate = (mission) => {
     return Axios.put(`/plc/missions`,mission);
 }
 
+let missionUpdateDisk = (mission) => {
+    return Axios.put(`/plc/missions/disk`,mission);
+}
+
 let importMission = (missions) => {
     return Axios.post(`/plc/missions/import`,{missions});
 }
@@ -43,6 +47,7 @@ export default {
     missionDelete,
     missionPlus,
     missionUpdate,
+    missionUpdateDisk,
     missionImport,
     importMission,
     verifyMission,
