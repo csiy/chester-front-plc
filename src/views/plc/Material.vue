@@ -30,10 +30,10 @@
                         <v-icon left>mdi-delete-forever-outline</v-icon>
                         批量删除
                     </v-btn>
-                    <v-btn @click="bathMission" color="success" small :disabled="selected.length===0">
-                        <v-icon left>mdi-shuffle-variant</v-icon>
-                        生成任务
-                    </v-btn>
+<!--                    <v-btn @click="bathMission" color="success" small :disabled="selected.length===0">-->
+<!--                        <v-icon left>mdi-shuffle-variant</v-icon>-->
+<!--                        生成任务-->
+<!--                    </v-btn>-->
                     <v-btn @click="downloadMaterials" small>
                         <v-icon left>mdi-download</v-icon>
                         导出

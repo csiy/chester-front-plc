@@ -39,6 +39,10 @@ let unSchedulerMissionPages = (query, page) => {
     return Axios.get(`/plc/missions/unScheduler`, {params: {...page}});
 }
 
+let print = (data) => {
+    return Axios.post(`/plc/missions/print`,data);
+}
+
 export default {
     getMission,
     schedulerMissionPages,
@@ -51,4 +55,5 @@ export default {
     missionImport,
     importMission,
     verifyMission,
+    print,
 }
