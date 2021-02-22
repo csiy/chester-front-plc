@@ -74,10 +74,10 @@
           <!--                        <v-icon left>mdi-upload</v-icon>-->
           <!--                        导入-->
           <!--                    </v-btn>-->
-          <v-btn @click="plusItem" color="orange darken-2" small>
-            <v-icon left>mdi-plus</v-icon>
-            添加
-          </v-btn>
+<!--          <v-btn @click="plusItem" color="orange darken-2" small>-->
+<!--            <v-icon left>mdi-plus</v-icon>-->
+<!--            添加-->
+<!--          </v-btn>-->
         </v-row>
       </template>
       <template v-slot:item.updatedOn="{ item }">
