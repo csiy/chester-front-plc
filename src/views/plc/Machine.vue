@@ -39,14 +39,6 @@
                     </template>
                     <span>设置</span>
                 </v-tooltip>
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="blue-grey lighten-1" @click="deleteItem(item.machineId)">
-                            <v-icon>mdi-delete-forever-outline</v-icon>
-                        </v-btn>
-                    </template>
-                    <span>删除</span>
-                </v-tooltip>
             </template>
             <template v-slot:no-data>
                 未查询到数据
