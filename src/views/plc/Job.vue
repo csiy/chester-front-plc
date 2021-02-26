@@ -23,7 +23,7 @@
                 <v-btn color="orange" @click="startMachine" v-else>开始</v-btn>
             </v-card>
             <v-divider/>
-            <v-card elevation="0" v-if="mission" class="d-flex justify-start flex-wrap pa-4">
+            <v-card elevation="0" v-if="mission&&mission.missionId" class="d-flex justify-start flex-wrap pa-4">
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.count*mission.quantity">包装总数:{{mission.count*mission.quantity}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.quantity">包数:{{mission.count}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.quantity">定额数量:{{mission.quantity}}</div>
@@ -79,6 +79,7 @@
                 if(this.disk.missionId){
                     MissionApi.getMission(this.disk.missionId).then(v=>{
                         this.mission = v;
+                        console.log(this.mission)
                     })
                 }else{
                     this.mission = null;
