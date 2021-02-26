@@ -78,8 +78,7 @@
                 this.diskNum = this.machine.disks.indexOf(this.disk);
                 if(this.disk.missionId){
                     MissionApi.getMission(this.disk.missionId).then(v=>{
-                        this.mission = v;
-                        console.log(this.mission)
+                        this.mission = v.data;
                     })
                 }else{
                     this.mission = null;
