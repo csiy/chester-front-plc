@@ -101,8 +101,9 @@ export default {
         {text: '包数', sortable: false, value: 'count'},
         {text: '定额数量', sortable: false, value: 'quantity'},
         {text: '盘号', sortable: false, value: 'disk'},
-        {text: '生产站位', sortable: false, value: 'position'},
-        {text: '存储BIN位', sortable: false, value: 'bin'},
+        {text: '高速速率', sortable: false, value: 'highSpeed'},
+        {text: '低速速率', sortable: false, value: 'lowSpeed'},
+        {text: '低速量', sortable: false, value: 'lowNumber'},
         {text: '操作', sortable: false, value: 'action'},
       ],
       dialog: {
@@ -124,8 +125,8 @@ export default {
           curPage: 1,
           pageSize: this.page.total
         }).then(v => {
-          const tHeader = ['任务Id', '物料号', 'AO工序号', '包数', '定额数量', '盘号', '生产站位', '存储BIN位']
-          const filterVal = ['missionId', 'materialCode', 'aoCode', 'count', 'quantity', 'disk', 'position', 'bin']
+          const tHeader = ['任务Id', '物料号', 'AO工序号', '包数', '定额数量', '盘号', '高速速率', '低速速率','低速量']
+          const filterVal = ['missionId', 'materialCode', 'aoCode', 'count', 'quantity', 'disk', 'highSpeed', 'lowSpeed','lowNumber']
           const list = v.data.items.map(v => {
             return {
               'missionId': v.missionId,

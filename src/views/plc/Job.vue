@@ -30,8 +30,9 @@
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.materialCode">物料号:{{mission.materialCode}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.aoCode">AO工序号:{{mission.aoCode}}</div>
                 <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.disk">盘号:{{mission.disk}}</div>
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.position">生产站位:{{mission.position}}</div>
-                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.bin">存储BIN位:{{mission.bin}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.highSpeed">高速速率:{{mission.highSpeed}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.lowSpeed">低速速率:{{mission.lowSpeed}}</div>
+                <div style="width: 250px;line-height: 32px" class="text-truncate" :title="mission.lowNumber">低速量:{{mission.lowNumber}}</div>
             </v-card>
         </v-card>
         <SchedulerJobs v-if="disk" :machine-id="machine.machineId" :disk="disk" :search-action="schedulerMissionPages" title="已排程列表"></SchedulerJobs>
