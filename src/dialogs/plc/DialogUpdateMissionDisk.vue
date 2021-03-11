@@ -11,6 +11,16 @@
                             <v-text-field clearable v-model.trim="mission.disk" :rules="[rules.disk]" label="请输入盘号" required></v-text-field>
                         </v-col>
                     </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field clearable v-model.trim="mission.highSpeed" :rules="[rules.highSpeed]" label="请输入高速率" required></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field clearable v-model.trim="mission.lowSpeed" :rules="[rules.lowSpeed]" label="请输入低速率" required></v-text-field>
+                        </v-col>
+                    </v-row>
                 </v-form>
             </v-container>
         </v-card-text>
@@ -40,7 +50,9 @@
                 },
                 loading:false,
                 rules: {
-                    disk: (v) => v!=null||'请输入盘号'
+                    disk: (v) => v!=null||'请输入盘号',
+                    highSpeed: (v) => v!=null||'请输入高速率',
+                    lowSpeed: (v) => v!=null||'请输入低速率',
                 },
             }
         },
