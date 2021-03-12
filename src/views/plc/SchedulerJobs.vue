@@ -104,6 +104,7 @@ export default {
         {text: '高速速率', sortable: false, value: 'highSpeed'},
         {text: '低速速率', sortable: false, value: 'lowSpeed'},
         {text: '低速量', sortable: false, value: 'lowNumber'},
+        {text: '检字号', sortable: false, value: 'verify'},
         {text: '操作', sortable: false, value: 'action'},
       ],
       dialog: {
@@ -125,8 +126,8 @@ export default {
           curPage: 1,
           pageSize: this.page.total
         }).then(v => {
-          const tHeader = ['任务Id', '物料号', 'AO工序号', '包数', '定额数量', '盘号', '高速速率', '低速速率','低速量']
-          const filterVal = ['missionId', 'materialCode', 'aoCode', 'count', 'quantity', 'disk', 'highSpeed', 'lowSpeed','lowNumber']
+          const tHeader = ['任务Id', '物料号', 'AO工序号', '包数', '定额数量', '盘号', '高速速率', '低速速率','低速量','检字号']
+          const filterVal = ['missionId', 'materialCode', 'aoCode', 'count', 'quantity', 'disk', 'highSpeed', 'lowSpeed','lowNumber','verify']
           const list = v.data.items.map(v => {
             return {
               'missionId': v.missionId,
@@ -136,7 +137,6 @@ export default {
               'quantity': v.quantity,
               'disk': v.disk.name,
               'position': v.position,
-              'bin': v.bin,
             }
           })   //table数据
           const data = this.formatJson(filterVal, list);

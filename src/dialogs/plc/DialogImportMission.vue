@@ -55,6 +55,84 @@
                         </template>
                     </v-edit-dialog>
                 </template>
+                <template v-slot:item.height="{item}">
+                    <v-edit-dialog large :return-value.sync="item.height">
+                        {{ item.height }}
+                        <template v-slot:input>
+                            <v-text-field
+                                    v-model.trim="item.height"
+                                    label="请输入高"
+                                    :rules="[rules.height]"
+                                    counter
+                            ></v-text-field>
+                        </template>
+                    </v-edit-dialog>
+                </template>
+                <template v-slot:item.width="{item}">
+                    <v-edit-dialog large :return-value.sync="item.width">
+                        {{ item.width }}
+                        <template v-slot:input>
+                            <v-text-field
+                                    v-model.trim="item.width"
+                                    label="请输入宽"
+                                    :rules="[rules.width]"
+                                    counter
+                            ></v-text-field>
+                        </template>
+                    </v-edit-dialog>
+                </template>
+                <template v-slot:item.highSpeed="{item}">
+                    <v-edit-dialog large :return-value.sync="item.highSpeed">
+                        {{ item.highSpeed }}
+                        <template v-slot:input>
+                            <v-text-field
+                                    v-model.trim="item.highSpeed"
+                                    label="请输入高速速率"
+                                    :rules="[rules.highSpeed]"
+                                    counter
+                            ></v-text-field>
+                        </template>
+                    </v-edit-dialog>
+                </template>
+                <template v-slot:item.lowSpeed="{item}">
+                    <v-edit-dialog large :return-value.sync="item.lowSpeed">
+                        {{ item.lowSpeed }}
+                        <template v-slot:input>
+                            <v-text-field
+                                    v-model.trim="item.lowSpeed"
+                                    label="请输入低速速率"
+                                    :rules="[rules.lowSpeed]"
+                                    counter
+                            ></v-text-field>
+                        </template>
+                    </v-edit-dialog>
+                </template>
+                <template v-slot:item.lowNumber="{item}">
+                    <v-edit-dialog large :return-value.sync="item.lowNumber">
+                        {{ item.lowNumber }}
+                        <template v-slot:input>
+                            <v-text-field
+                                    v-model.trim="item.lowNumber"
+                                    label="请输入低速量"
+                                    :rules="[rules.lowNumber]"
+                                    counter
+                            ></v-text-field>
+                        </template>
+                    </v-edit-dialog>
+                </template>
+                <template v-slot:item.verify="{item}">
+                    <v-edit-dialog large :return-value.sync="item.verify">
+                        {{ item.verify }}
+                        <template v-slot:input>
+                            <v-text-field
+                                    v-model.trim="item.verify"
+                                    label="请输入检字号"
+                                    :rules="[rules.verify]"
+                                    counter
+                            ></v-text-field>
+                        </template>
+                    </v-edit-dialog>
+                </template>
                 <template v-slot:item.actions="{item}">
                     <v-btn icon color="blue-grey lighten-1" @click="deleteItem(item)">
                         <v-icon>mdi-delete-forever-outline</v-icon>
@@ -80,6 +158,12 @@
                     {text: '物料号', sortable: false, value: 'materialCode',width:120},
                     {text: 'AO工序号', sortable: false, value: 'aoCode',width:120},
                     {text: '包数', sortable: false, value: 'count',width:120},
+                    {text: '高', sortable: false, value: 'height',width:120},
+                    {text: '宽', sortable: false, value: 'width',width:120},
+                    {text: '高速速率', sortable: false, value: 'highSpeed',width:120},
+                    {text: '低速速率', sortable: false, value: 'lowSpeed',width:120},
+                    {text: '低速量', sortable: false, value: 'lowNumber',width:120},
+                    {text: '检字号', sortable: false, value: 'verify',width:120},
                     {text: '状态', sortable: false, value: 'importStatus',width:120},
                     {text: '操作', sortable: false, value: 'actions',width:120}
                 ],
@@ -87,6 +171,12 @@
                     materialCode: (v) => v!=null||'请输入物料号',
                     count: (v) => /^[1-9]\d*$/.test(v)&&v<100000000||'请输入包数',
                     aoCode: (v) => v!=null||'请输入AO工序号',
+                    height: (v) => v!=null||'请输入高',
+                    width: (v) => v!=null||'请输入宽',
+                    highSpeed: (v) => v!=null||'请输入高速速率',
+                    lowSpeed: (v) => v!=null||'请输入低速速率',
+                    lowNumber: (v) => v!=null||'请输入低速量',
+                    verify: (v) => v!=null||'请输入检字号',
                 }
             }
         },
@@ -101,6 +191,12 @@
                             materialCode:v['*物料号'],
                             aoCode:v['*AO工序号'],
                             count:v['*包数'],
+                            height: v['*高'],
+                            width: v['*宽'],
+                            highSpeed: v['*高速速率'],
+                            lowSpeed: v['*低速速率'],
+                            lowNumber: v['*低速量'],
+                            verify: v['*检字号'],
                             importStatus: ''
                         }
                     })
@@ -120,6 +216,24 @@
                             res = false
                         }else if(!mission.count){
                             mission.importStatus = "请输入包数"
+                            res = false
+                        }else if(!mission.height){
+                            mission.importStatus = "请输入高"
+                            res = false
+                        }else if(!mission.width){
+                            mission.importStatus = "请输入宽"
+                            res = false
+                        }else if(!mission.highSpeed){
+                            mission.importStatus = "请输入高速速率"
+                            res = false
+                        }else if(!mission.lowSpeed){
+                            mission.importStatus = "请输入低速速率"
+                            res = false
+                        }else if(!mission.lowNumber){
+                            mission.importStatus = "请输入低速量"
+                            res = false
+                        }else if(!mission.verify){
+                            mission.importStatus = "请输入检字号"
                             res = false
                         }
                     }

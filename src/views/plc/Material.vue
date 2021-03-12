@@ -30,10 +30,10 @@
                         <v-icon left>mdi-delete-forever-outline</v-icon>
                         批量删除
                     </v-btn>
-<!--                    <v-btn @click="bathMission" color="success" small :disabled="selected.length===0">-->
-<!--                        <v-icon left>mdi-shuffle-variant</v-icon>-->
-<!--                        生成任务-->
-<!--                    </v-btn>-->
+                    <v-btn @click="bathMission" color="success" small :disabled="selected.length===0">
+                        <v-icon left>mdi-shuffle-variant</v-icon>
+                        生成任务
+                    </v-btn>
                     <v-btn @click="downloadMaterials" small>
                         <v-icon left>mdi-download</v-icon>
                         导出
@@ -105,7 +105,6 @@
                     {text: '盘号', sortable: false, value: 'disk'},
                     {text: '定额数量', sortable: false, value: 'quantity'},
                     {text: '生产站位', sortable: false, value: 'position'},
-                    {text: '存储BIN位', sortable: false, value: 'bin'},
                     {text: '操作时间', sortable: false, value: 'updatedOn'},
                     {text: '操作人', sortable: false, value: 'updatedName'},
                     {text: '操作', sortable: false, value: 'action'},
@@ -171,7 +170,7 @@
                     pageSize: this.page.total
                 }).then(v=>{
                     const tHeader = ['物料号','AO工序号','盘号','定额数量','生产站位','存储BIN位']
-                    const filterVal = ['materialCode','aoCode','disk','quantity','position','bin']
+                    const filterVal = ['materialCode','aoCode','disk','quantity','position']
                     const list = v.data.items.map(v=>{
                         return {
                             'materialCode':v.materialCode,
@@ -179,7 +178,6 @@
                             'disk':v.disk,
                             'quantity':v.quantity,
                             'position':v.position,
-                            'bin':v.bin,
                         }
                     })   //table数据
                     const data = this.formatJson(filterVal,list);

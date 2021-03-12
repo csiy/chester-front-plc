@@ -81,19 +81,6 @@
                         </template>
                     </v-edit-dialog>
                 </template>
-                <template v-slot:item.bin="{item}">
-                    <v-edit-dialog large :return-value.sync="item.bin">
-                        {{ item.bin }}
-                        <template v-slot:input>
-                            <v-text-field
-                                    v-model.trim="item.bin"
-                                    :rules="[rules.bin]"
-                                    label="请输入存储BIN位"
-                                    counter
-                            ></v-text-field>
-                        </template>
-                    </v-edit-dialog>
-                </template>
                 <template v-slot:item.actions="{item}">
                     <v-btn icon color="blue-grey lighten-1" @click="deleteItem(item)">
                         <v-icon>mdi-delete-forever-outline</v-icon>
@@ -122,7 +109,6 @@
                   {text: '盘号', sortable: false, value: 'disk',width:120},
                   {text: '定额数量', sortable: false, value: 'quantity',width:120},
                   {text: '生产站位', sortable: false, value: 'position',width:120},
-                  {text: '存储BIN位', sortable: false, value: 'bin',width:120},
                   {text: '状态', sortable: false, value: 'status',width:120},
                   {text: '操作', sortable: false, value: 'actions',width:120}
               ],
@@ -132,7 +118,6 @@
                   quantity: (v) => /^[1-9]\d*$/.test(v)&&v<100000000||'请输入定额数量',
                   aoCode: (v) => v!=null||'请输入AO工序号',
                   position: (v) => v!=null||'请输入生产站位',
-                  bin: (v) => v!=null||'请输入存储BIN位',
               },
           }
         },
@@ -149,7 +134,6 @@
                             quantity:v['*定额数量'],
                             aoCode:v['*AO工序号'],
                             position:v['*生产站位'],
-                            bin:v['*存储BIN位'],
                             status: ''
                         }
                     })
@@ -170,8 +154,6 @@
                             material.status = "请输入定额数量"
                         }else if(!material.position){
                             material.status = "请输入生产站位"
-                        }else if(!material.bin){
-                            material.status = "请输入存储BIN位"
                         }else{
                             await MaterialApi.materialPlus(material).then(()=>{
                                 material.status = "导入成功"
