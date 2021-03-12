@@ -158,6 +158,7 @@ export default {
         }
       ],
       headers: [
+        {text: '任务ID', sortable: false, value: 'missionId'},
         {text: '分配ID', sortable: false, value: 'waveNo'},
         {text: '物料号', sortable: false, value: 'materialCode'},
         {text: 'AO工序号', sortable: false, value: 'aoCode'},
