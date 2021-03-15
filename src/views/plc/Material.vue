@@ -169,7 +169,7 @@
                     curPage: 1,
                     pageSize: this.page.total
                 }).then(v=>{
-                    const tHeader = ['物料号','AO工序号','盘号','定额数量','生产站位','存储BIN位']
+                    const tHeader = ['物料号','AO工序号','盘号','定额数量','生产站位']
                     const filterVal = ['materialCode','aoCode','disk','quantity','position']
                     const list = v.data.items.map(v=>{
                         return {
