@@ -66,6 +66,10 @@
             <v-icon left>mdi-cloud-print-outline</v-icon>
             批量打印
           </v-btn>
+          <v-btn @click="printPDFItems" color="success" small :disabled="selected.length===0">
+            <v-icon left>mdi-file-pdf-box-outline</v-icon>
+            PDF
+          </v-btn>
           <v-btn @click="downloadMission" small>
             <v-icon left>mdi-download</v-icon>
             导出
@@ -94,6 +98,14 @@
             </v-btn>
           </template>
           <span>打印</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" icon color="blue-grey lighten-1" @click="printPDFItem(item)">
+              <v-icon>mdi-file-pdf-box-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>PDF</span>
         </v-tooltip>
         <v-tooltip bottom>
           <template v-if="item.transform!==2" v-slot:activator="{ on }">
@@ -128,6 +140,9 @@ import DialogPlusMission from "../../dialogs/plc/DialogPlusMission";
 import DialogUpdateMission from "../../dialogs/plc/DialogUpdateMission";
 import DialogImportMission from "../../dialogs/plc/DialogImportMission";
 import export_json_to_excel from "../../lib/Export2Excel";
+import Labels from "../../components/label/Labels";
+import Label from "../../components/label/Label";
+import MaterialApi from "../../api/plc/MaterialApi";
 
 export default {
   name: "Mission",
@@ -250,6 +265,44 @@ export default {
     printItem(item) {
       MissionApi.print({ids:[item.waveNo]}).then(()=>{
         this.$message.warning('以提交打印')
+      })
+    },
+    printPDFItems() {
+      if (this.selected.length === 0) {
+        this.$message.warning('请先选择')
+      } else {
+        let labels = this.selected.map(v => {
+          return {
+            missionId: v.missionId,
+            aoCode: v.aoCode,
+            count: v.count,
+            materialCode: v.materialCode,
+            quantity: v.quantity,
+            position: v.position,
+            t: new Date().getTime()
+          }
+        })
+        this.$dialog.show(Labels, {
+          labelSize: {
+            w: 10,
+            h: 8
+          },
+          labels: labels,
+          width: 600,
+        })
+      }
+    },
+    printPDFItem(item) {
+      MaterialApi.getMaterial(item.materialCode, item.aoCode).then(v => {
+        this.$dialog.show(Label, {
+          labelSize: {
+            w: 10,
+            h: 8
+          },
+          missionId: item.missionId,
+          form: {...v.data},
+          width: 600,
+        })
       })
     }
   }
